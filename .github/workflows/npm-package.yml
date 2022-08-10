@@ -32,7 +32,7 @@ jobs:
                       types
                       !dist/**/*.md
     publish:
-        if: endsWith(github.ref, jobs.build.steps.package-version.outputs.current-version)
+        if: endsWith(github.ref, needs.build.steps.package-version.outputs.current-version)
         needs: build
         runs-on: ubuntu-latest
         permissions:
