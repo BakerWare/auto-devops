@@ -2,6 +2,12 @@ name: NPM Package
 
 on:
     workflow_call:
+        inputs:
+            publish:
+                type: boolean
+                default: false
+                required: false
+                description: "Determine wether or not we want to publish the NPM package."
 
 jobs:
     build:
@@ -34,7 +40,7 @@ jobs:
                       types
                       !dist/**/*.md
     publish:
-        if: endsWith(github.ref, needs.build.steps.package-version.outputs.current-version)
+        if: inputs.publish
         needs: build
         runs-on: ubuntu-latest
         permissions:
