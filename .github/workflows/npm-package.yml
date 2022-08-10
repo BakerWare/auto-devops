@@ -27,6 +27,8 @@ jobs:
               with:
                   name: build
                   path: |
+                      package.json
+                      package-lock.json
                       index.d.ts
                       dist
                       types
