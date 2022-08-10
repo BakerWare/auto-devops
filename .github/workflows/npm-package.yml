@@ -13,10 +13,10 @@ on:
 
 jobs:
     build:
-        uses: ./.github/workflows/build/npm-build.yml
+        uses: ./.github/workflows/npm-build.yml
         secrets: inherit
     publish:
         if: github.event_name == 'release'
         needs: build
-        uses: ./.github/workflows/publish/npm-publish.yml
+        uses: ./.github/workflows/npm-publish.yml
         secrets: inherit
