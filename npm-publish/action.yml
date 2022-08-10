@@ -1,0 +1,24 @@
+name: Build NPM Package
+description: "Build npm package"
+author: "Bakerware"
+inputs:
+    token:
+        description: Access token
+        required: true
+runs:
+    using: composite
+    steps:
+        - uses: actions/setup-node@v3
+          with:
+              node-version: 16
+              registry-url: https://npm.pkg.github.com/
+        - name: Download build artifact
+          uses: actions/download-artifact@v3
+          with:
+              name: build
+        - name: Cd build and publish
+          run: |
+              cd build
+              npm publish
+          env:
+              NODE_AUTH_TOKEN: ${{inputs.token}}

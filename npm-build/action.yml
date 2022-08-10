@@ -1,0 +1,29 @@
+name: Build NPM Package
+description: "Build npm package"
+author: "Bakerware"
+inputs:
+    ACTION_ACCESS_TOKEN:
+        description: ""
+        required: true
+runs:
+    using: composite
+    steps:
+        - name: Checkout repository
+          uses: actions/checkout@v3
+        - uses: actions/setup-node@v3
+          with:
+              node-version: 16
+              registry-url: https://npm.pkg.github.com/
+        - name: npm install and build
+          run: |
+              npm config set @bakerware:registry  https://npm.pkg.github.com
+              npm config set //npm.pkg.github.com/:_authToken "${{ inputs.ACTION_ACCESS_TOKEN }}"
+              npm ci
+              npm run build
+        - name: Archive production artifacts
+          uses: actions/upload-artifact@v3
+          with:
+              name: build
+              path: |
+                  dist
+                  !dist/**/*.md
