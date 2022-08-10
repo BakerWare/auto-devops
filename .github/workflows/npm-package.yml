@@ -1,0 +1,22 @@
+name: NPM Package
+
+on:
+    push:
+        tags:
+            - "*"
+        branches:
+            - main
+            - master
+    pull_request:
+        types: [opened, synchronize, reopened]
+    workflow_call:
+
+jobs:
+    build:
+        uses: ./.github/workflows/build/npm-build.yml
+        secrets: inherit
+    publish:
+        if: github.event_name == 'release'
+        needs: build
+        uses: ./.github/workflows/publish/npm-publish.yml
+        secrets: inherit
