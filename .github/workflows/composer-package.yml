@@ -33,7 +33,7 @@ jobs:
                     files: "phpunit.xml.dist"
                     allow_failure: false
             -   name: Create coverage file
-                run: touch ./coverage/text.txt
+                run: mkdir -p ./coverage && touch ./coverage/text.txt
             -   name: PHPUnit Tests
                 if: steps.check_files.outputs.files_exists == 'true'
                 uses: php-actions/phpunit@v3
