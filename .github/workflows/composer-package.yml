@@ -28,6 +28,7 @@ jobs:
                 run: rm -f $GITHUB_WORKSPACE/auth.json
             -   name: "Check file existence"
                 uses: andstor/file-existence-action@v1
+                id: check_files
                 with:
                     files: "phpunit.xml.dist"
                     allow_failure: false
