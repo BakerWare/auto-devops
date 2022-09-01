@@ -11,7 +11,15 @@ jobs:
     build:
         runs-on: ubuntu-latest
         steps:
-            -   uses: php-actions/composer@v6
+            -   name: Add HTTP basic auth credentials
+                run: echo '${{ secrets.COMPOSER_AUTH_JSON }}' > $GITHUB_WORKSPACE/auth.json
+            -   name: Install dependencies
+                uses: php-actions/composer@v6
+                with:
+                  php_version: "8.0"
+            -   name: Remove auth.json file
+                run: rm -f $GITHUB_WORKSPACE/auth.json
+
     test:
         runs-on: ubuntu-latest
         needs: build
