@@ -1,0 +1,43 @@
+on:
+    workflow_call:
+        inputs:
+            publish:
+                type: boolean
+                default: false
+                required: false
+                description: "Determine wether or not we want to publish the NPM package."
+
+jobs:
+    build:
+        runs-on: ubuntu-latest
+        steps:
+            -   uses: php-actions/composer@v6
+    test:
+        runs-on: ubuntu-latest
+        needs: build
+        steps:
+            -   name: "Check file existence"
+                uses: andstor/file-existence-action@v1
+                with:
+                    files: "phpunix.xml.dist"
+                    allow_failure: true
+            -   name: PHPUnit Tests
+                if: steps.check_files.outputs.files_exists == 'true'
+                uses: php-actions/phpunit@v3
+                env:
+                    XDEBUG_MODE: coverage
+                with:
+                    php_extensions: xdebug
+                    bootstrap: vendor/autoload.php
+                    configuration: phpunit.xml.dist
+                    args: --coverage-text
+                    php_version: "8.0"
+    publish:
+        if: inputs.publish
+        needs: test
+        runs-on: ubuntu-latest
+        steps:
+            -   name: Synchronize Repman
+                uses: joelwmale/webhook-action@master
+                with:
+                    url: ${{ secrets.REPMAN_WEBHOOK }}
