@@ -44,21 +44,17 @@ jobs:
                     php_extensions: xdebug calendar
                     bootstrap: vendor/autoload.php
                     configuration: phpunit.xml.dist
-                    args: --coverage-text="coverage/text.txt"
+                    args: --coverage-text="coverage/text.txt" && echo "coverage=$(cat coverage/text.txt)" >> $GITHUB_ENV
                     php_version: "8.0"
-            -   name: Save coverage to variable
-                if: steps.check_files.outputs.files_exists == 'true'
-                id: coverage
-                run: |
-                    echo "::set-output name=COVERAGE::$(cat coverage/text.txt)"
             -   name: Comment in pull request
                 if: steps.check_files.outputs.files_exists == 'true' && github.event_name == 'pull_request'
                 uses: mshick/add-pr-comment@v1
                 with:
-                    message: ${{ steps.coverage.outputs.COVERAGE }}
+                    message: ${{ env.coverage }}
                     repo-token: ${{ secrets.GITHUB_TOKEN }}
                     repo-token-user-login: 'github-actions[bot]' # The user.login for temporary GitHub tokens
                     allow-repeats: false # This is the default
+
     
     publish:
         if: inputs.publish
