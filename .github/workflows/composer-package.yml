@@ -33,34 +33,15 @@ jobs:
                 with:
                     files: "phpunit.xml.dist"
                     allow_failure: false
-            -   name: Create coverage file
-                run: mkdir -p coverage && touch coverage/text.txt
             -   name: PHPUnit Tests
                 if: steps.check_files.outputs.files_exists == 'true'
-                uses: php-actions/phpunit@v3
-                env:
-                    XDEBUG_MODE: coverage
-                with:
-                    php_extensions: xdebug calendar
-                    bootstrap: vendor/autoload.php
-                    configuration: phpunit.xml.dist
-                    args: --coverage-text="coverage/text.txt"
-                    php_version: "8.0"
-            -   name: Save coverage to env
-                run: |
-                    echo cat coverage/text.txt
-                    echo "coverage=$(cat coverage/text.txt)" >> $GITHUB_ENV
-
-            -   name: Comment in pull request
+                run: composer test:coverage
+            -   name: Coverage Report as Comment (Clover)
                 if: steps.check_files.outputs.files_exists == 'true' && github.event_name == 'pull_request'
-                uses: mshick/add-pr-comment@v1
+                uses: lucassabreu/comment-coverage-clover@main
                 with:
-                    message: ${{ env.coverage }}
-                    repo-token: ${{ secrets.GITHUB_TOKEN }}
-                    repo-token-user-login: 'github-actions[bot]' # The user.login for temporary GitHub tokens
-                    allow-repeats: false # This is the default
+                    file: output/code-coverage/clover.xml
 
-    
     publish:
         if: inputs.publish
         needs: build-and-test
