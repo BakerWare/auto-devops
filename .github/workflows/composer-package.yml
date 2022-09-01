@@ -17,7 +17,7 @@ jobs:
         steps:
             -   uses: actions/checkout@v3
             -   name: Add HTTP basic auth credentials
-            -   uses: "finnp/create-file-action@master"
+                uses: "finnp/create-file-action@master"
                 env:
                     FILE_NAME: "auth.json"
                     FILE_DATA: ${{ secrets.COMPOSER_AUTH_JSON }}
