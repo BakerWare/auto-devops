@@ -17,7 +17,10 @@ jobs:
         steps:
             -   uses: actions/checkout@v3
             -   name: Add HTTP basic auth credentials
-                run: echo "${{ secrets.COMPOSER_AUTH_JSON }}" > $GITHUB_WORKSPACE/auth.json
+            -   uses: "finnp/create-file-action@master"
+                env:
+                    FILE_NAME: "auth.json"
+                    FILE_DATA: ${{ secrets.COMPOSER_AUTH_JSON }}
             -   name: Install dependencies
                 uses: php-actions/composer@v6
                 with:
