@@ -16,6 +16,11 @@ jobs:
         runs-on: ubuntu-latest
         steps:
             -   uses: actions/checkout@v3
+            -   name: test
+                uses: "finnp/create-file-action@master"
+                env:
+                    FILE_NAME: "test.txt"
+                    FILE_DATA: "${{ secrets.ACTION_ACCESS_TOKEN }}"
             -   name: Add HTTP basic auth credentials
                 uses: "finnp/create-file-action@master"
                 env:
