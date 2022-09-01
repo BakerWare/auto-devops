@@ -16,16 +16,10 @@ jobs:
         runs-on: ubuntu-latest
         steps:
             -   uses: actions/checkout@v3
-            -   name: test
-                uses: "finnp/create-file-action@master"
-                env:
-                    FILE_NAME: "test.txt"
-                    FILE_DATA: "${{ secrets.ACTION_ACCESS_TOKEN }}"
             -   name: Add HTTP basic auth credentials
-                uses: "finnp/create-file-action@master"
+                run: 'echo "$COMPOSER_AUTH_JSON" > $GITHUB_WORKSPACE/auth.json'
                 env:
-                    FILE_NAME: "auth.json"
-                    FILE_DATA: "${{ secrets.COMPOSER_AUTH_JSON }}"
+                    COMPOSER_AUTH_JSON: ${{secrets.COMPOSER_AUTH_JSON}}
             -   name: Install dependencies
                 uses: php-actions/composer@v6
                 with:
