@@ -50,7 +50,7 @@ jobs:
                 if: steps.check_files.outputs.files_exists == 'true'
                 id: coverage
                 run: |
-                    echo "::set-output name=COVERAGE::$(cat ./coverage/text.txt)"
+                    echo "::set-output name=COVERAGE::$(cat coverage/text.txt)"
             -   name: Comment in pull request
                 if: steps.check_files.outputs.files_exists == 'true' && github.event_name == 'pull_request'
                 uses: mshick/add-pr-comment@v1
