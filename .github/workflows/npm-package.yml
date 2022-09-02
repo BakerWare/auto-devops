@@ -21,7 +21,7 @@ jobs:
             -   uses: actions/setup-node@v3
                 with:
                     node-version: 16
-                    registry-url: https://npm.pkg.github.com/
+                    registry-url: https://npm.pkg.github.com
             -   name: npm install and build
                 run: |
                     npm config set @bakerware:registry  https://npm.pkg.github.com
@@ -47,14 +47,13 @@ jobs:
             -   uses: actions/setup-node@v3
                 with:
                     node-version: 16
-                    registry-url: https://npm.pkg.github.com/
-            -   name: Setup npm config
-                run: |
-                    npm config set //npm.pkg.github.com/:_authToken "${{secrets.GITHUB_TOKEN}}"
+                    registry-url: https://npm.pkg.github.com
             -   name: Download build artifact
                 uses: actions/download-artifact@v3
                 with:
                     name: build
+            -   name: testing
+                run: ls
             -   run: npm publish
                 env:
                     NODE_AUTH_TOKEN: ${{secrets.GITHUB_TOKEN}}
