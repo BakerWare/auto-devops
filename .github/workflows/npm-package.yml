@@ -8,11 +8,6 @@ on:
                 default: false
                 required: false
                 description: "Determine wether or not we want to publish the NPM package."
-permissions:
-    contents: read
-    packages: write
-    actions: read
-    pull-requests: write
 
 jobs:
     build:
@@ -48,14 +43,14 @@ jobs:
         if: inputs.publish
         needs: build
         runs-on: ubuntu-latest
-        permissions:
-            contents: read
-            packages: write
         steps:
             -   uses: actions/setup-node@v3
                 with:
                     node-version: 16
                     registry-url: https://npm.pkg.github.com/
+            -   name: Setup npm config
+                run: |
+                    npm config set //npm.pkg.github.com/:_authToken "${{secrets.GITHUB_TOKEN}}"
             -   name: Download build artifact
                 uses: actions/download-artifact@v3
                 with:
