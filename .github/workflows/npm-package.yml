@@ -8,9 +8,6 @@ on:
                 default: false
                 required: false
                 description: "Determine wether or not we want to publish the NPM package."
-        secrets:
-            token:
-                required: false
 
 jobs:
     build:
@@ -61,4 +58,4 @@ jobs:
                     cat /home/runner/work/_temp/.npmrc
             -   run: npm publish
                 env:
-                    NODE_AUTH_TOKEN: ${{secrets.token}}
+                    NODE_AUTH_TOKEN: ${{secrets.GITHUB_TOKEN}}
