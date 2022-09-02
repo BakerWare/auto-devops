@@ -49,9 +49,9 @@ jobs:
                 uses: actions/download-artifact@v3
                 with:
                     name: build
-            -   name: get-npm-version
-                id: package-version
-                uses: martinbeentjes/npm-get-version-action@main
+            -   name: Get package info
+                id: package
+                uses: codex-team/action-nodejs-package-info@v1
             -   run: npm publish
                 env:
                     NODE_AUTH_TOKEN: ${{secrets.GITHUB_TOKEN}}
@@ -59,7 +59,8 @@ jobs:
                 uses: rtCamp/action-slack-notify@v2
                 env:
                     SLACK_CHANNEL: 'gitlab'
-                    SLACK_FOOTER: ''
-                    SLACK_MESSAGE: "Published ${{ steps.package-version.outputs.current-version}}" 
+                    SLACK_FOOTER: "Run npm i ${{ steps.package.outputs.name }}@latest to update to this latest version"
+                    SLACK_MESSAGE: "Published ${{ steps.package.outputs.version }}" 
                     SLACK_COLOR: 'good' 
+                    SLACK_TITLE: "${{ steps.package.outputs.name }} heeft een nieuwe versie" 
                     SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
