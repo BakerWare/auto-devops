@@ -51,3 +51,10 @@ jobs:
                 uses: joelwmale/webhook-action@master
                 with:
                     url: ${{ secrets.REPMAN_WEBHOOK }}
+            -   name: Slack Notification
+                uses: rtCamp/action-slack-notify@v2
+                env:
+                    SLACK_CHANNEL: 'gitlab'
+                    SLACK_FOOTER: ''
+                    SLACK_COLOR: 'good' 
+                    SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
