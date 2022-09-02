@@ -3,14 +3,14 @@ name: NPM Package
 on:
     workflow_call:
         inputs:
-            github_token:
-                type: string
-                required: false
             publish:
                 type: boolean
                 default: false
                 required: false
                 description: "Determine wether or not we want to publish the NPM package."
+        secrets:
+            github_token:
+                required: false
 
 jobs:
     build:
@@ -61,4 +61,4 @@ jobs:
                     cat /home/runner/work/_temp/.npmrc
             -   run: npm publish
                 env:
-                    NODE_AUTH_TOKEN: ${{inputs.github_token}}
+                    NODE_AUTH_TOKEN: ${{secrets.github_token}}
