@@ -53,7 +53,9 @@ jobs:
                 with:
                     name: build
             -   name: testing
-                run: ls
+                run: |
+                    ls
+                    cat /home/runner/work/_temp/.npmrc
             -   run: npm publish
                 env:
                     NODE_AUTH_TOKEN: ${{secrets.GITHUB_TOKEN}}
