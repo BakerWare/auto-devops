@@ -8,6 +8,12 @@ on:
                 default: false
                 required: false
                 description: "Determine wether or not we want to publish the NPM package."
+permissions:
+    contents: read
+    packages: write
+    actions: read
+    pull-requests: write
+
 jobs:
     build:
         runs-on: ubuntu-latest
