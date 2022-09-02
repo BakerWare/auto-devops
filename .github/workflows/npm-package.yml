@@ -5,7 +5,7 @@ on:
         inputs:
             github_token:
                 type: string
-                required: true
+                required: false
             publish:
                 type: boolean
                 default: false
