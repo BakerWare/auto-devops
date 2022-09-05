@@ -58,7 +58,7 @@ jobs:
             -   name: Slack Notification
                 uses: rtCamp/action-slack-notify@v2
                 env:
-                    SLACK_CHANNEL: 'gitlab'
+                    SLACK_CHANNEL: 'github'
                     SLACK_FOOTER: "Run npm i ${{ steps.package.outputs.name }}@latest to update to this latest version"
                     SLACK_MESSAGE: "Published ${{ steps.package.outputs.version }}" 
                     SLACK_COLOR: 'good' 

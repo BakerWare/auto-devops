@@ -51,10 +51,19 @@ jobs:
                 uses: joelwmale/webhook-action@master
                 with:
                     url: ${{ secrets.REPMAN_WEBHOOK }}
+            -   name: get package name
+                id: name
+                uses: notiz-dev/github-action-json-property@release
+                with: 
+                    path: 'composer.json'
+                    prop_path: 'name'
             -   name: Slack Notification
                 uses: rtCamp/action-slack-notify@v2
                 env:
-                    SLACK_CHANNEL: 'gitlab'
-                    SLACK_FOOTER: ''
+                    SLACK_CHANNEL: 'github'
+                    SLACK_FOOTER: "Run `composer update ${{steps.name.outputs.prop}}:latest` to update to this latest version"
+                    SLACK_MESSAGE: "Published ${{github.ref_name}}" 
                     SLACK_COLOR: 'good' 
+                    SLACK_TITLE: "Composer package ${{ steps.name.outputs.prop}} heeft een nieuwe versie" 
                     SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
+
