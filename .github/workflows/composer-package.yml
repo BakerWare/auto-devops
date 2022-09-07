@@ -1,6 +1,11 @@
 on:
     workflow_call:
         inputs:
+            phpVersion:
+                type: string
+                default: '8.0'
+                required: false
+                description: "PHP version to use"
             publish:
                 type: boolean
                 default: false
@@ -23,7 +28,7 @@ jobs:
             -   name: Install dependencies
                 uses: php-actions/composer@v6
                 with:
-                    php_version: "8.0"
+                    php_version: ${{ inputs.phpVersion }}
                     php_extensions: calendar
             -   name: Remove auth.json file
                 run: rm -f $GITHUB_WORKSPACE/auth.json
