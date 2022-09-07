@@ -1,16 +1,10 @@
 on:
     workflow_call:
-        inputs:
-            phpVersion:
-                type: string
-                default: '8.0'
-                required: false
-                description: "PHP version to use"
-            publish:
-                type: boolean
-                default: false
-                required: false
-                description: "Determine wether or not we want to publish the NPM package."
+        publish:
+            type: boolean
+            default: false
+            required: false
+            description: "Determine wether or not we want to publish the NPM package."
 
 permissions:
     contents: read
@@ -31,7 +25,7 @@ jobs:
                 uses: php-actions/composer@v6
                 with:
                     php_version: ${{ steps.supported-versions-matrix.outputs.highest}}
-                    php_extensions: ${{ steps.supported-versions-matrix.outputs.extensions}}
+                    php_extensions: calendar
             -   name: Remove auth.json file
                 run: rm -f $GITHUB_WORKSPACE/auth.json
             -   name: "Check file existence"
