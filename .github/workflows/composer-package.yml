@@ -25,11 +25,13 @@ jobs:
             -   uses: actions/checkout@v3
             -   name: Add HTTP basic auth credentials
                 run: echo '${{ secrets.COMPOSER_AUTH_JSON }}' > $GITHUB_WORKSPACE/auth.json
+            -   id: supported-versions-matrix
+                uses: WyriHaximus/github-action-composer-php-versions-in-range@v1
             -   name: Install dependencies
                 uses: php-actions/composer@v6
                 with:
-                    php_version: ${{ inputs.phpVersion }}
-                    php_extensions: calendar
+                    php_version: ${{ steps.supported-versions-matrix.outputs.highest}}
+                    php_extensions: ${{ steps.supported-versions-matrix.outputs.extensions}}
             -   name: Remove auth.json file
                 run: rm -f $GITHUB_WORKSPACE/auth.json
             -   name: "Check file existence"
