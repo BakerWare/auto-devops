@@ -60,9 +60,9 @@ jobs:
                 env:
                     SLACK_CHANNEL: 'github'
                     SLACK_USERNAME: 'BerryBot'
-                    SLACK_ICON_EMOJI: ':60fpsparrot:'
+                    SLACK_ICON: 'https://cdn-icons-png.flaticon.com/512/1514/1514967.png'
                     SLACK_FOOTER: "Run npm i ${{ steps.package.outputs.name }}@latest to update to this latest version"
-                    SLACK_MESSAGE: "Published ${{ steps.package.outputs.version }}" 
-                    SLACK_COLOR: 'good' 
-                    SLACK_TITLE: "${{ steps.package.outputs.name }} heeft een nieuwe versie" 
+                    SLACK_MESSAGE: "Published ${{ steps.package.outputs.version }}"
+                    SLACK_COLOR: 'good'
+                    SLACK_TITLE: "${{ steps.package.outputs.name }} heeft een nieuwe versie"
                     SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
