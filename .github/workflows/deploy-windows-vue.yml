@@ -2,7 +2,11 @@ name: Deploy windows Vue
 
 on:
     workflow_call:
-
+        inputs:
+            slackChannel:
+                type: string
+                required: false
+                default: team-dart-builds
 jobs:
     build:
         runs-on: ubuntu-latest
@@ -55,7 +59,7 @@ jobs:
             -   name: Slack Notification
                 uses: rtCamp/action-slack-notify@v2
                 env:
-                    SLACK_CHANNEL: 'github'
+                    SLACK_CHANNEL: ${{ inputs.slackChannel }}
                     SLACK_USERNAME: 'BerryBot'
                     SLACK_ICON: 'https://cdn-icons-png.flaticon.com/512/1514/1514967.png'
                     SLACK_FOOTER: "Please close any Zendesk ticket that was fixed in this deployment"
