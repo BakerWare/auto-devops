@@ -15,15 +15,13 @@ jobs:
                 with:
                     files: "dod.yaml"
                     allow_failure: false
-            -   name: "Create default dod file"
+            -   name: Create default dod file
                 if: steps.check_files.outputs.files_exists == 'false'
-                uses: "finnp/create-file-action@master"
-                env:
-                    FILE_NAME: "dod.yaml"
-                    FILE_DATA: |
-                        dod:
-                            - 'Applicatie/Package is handmatig getest'
-                            - 'Eventuele documentatie is aangepast'
+                run: |
+                    echo "dod:" > dod.yaml
+                    echo "  - 'Applicatie/Package is handmatig getest'" >> dod.yaml
+                    echo "  - 'Eventuele documentatie is aangepast'" >> dod.yaml
+
             -   name: Check DoD
                 uses: platisd/definition-of-done@master
                 with:
