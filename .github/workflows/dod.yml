@@ -1,0 +1,31 @@
+name: Definition Of Done
+
+on:
+    workflow_call:
+
+jobs:
+    check-dod:
+        runs-on: ubuntu-20.04
+        steps:
+            -   name: Clone Repo
+                uses: actions/checkout@v3
+            -   name: "Check file existence"
+                uses: andstor/file-existence-action@v1
+                id: check_files
+                with:
+                    files: "dod.yaml"
+                    allow_failure: false
+            -   name: "Create default dod file"
+                if: steps.check_files.outputs.files_exists == 'false'
+                uses: "finnp/create-file-action@master"
+                env:
+                    FILE_NAME: "dod.yaml"
+                    FILE_DATA: |
+                        dod:
+                            - 'Applicatie/Package is handmatig getest'
+                            - 'Eventuele documentatie is aangepast'
+            -   name: Check DoD
+                uses: platisd/definition-of-done@master
+                with:
+                    dod_yaml: 'dod.yaml'
+                    github_token: ${{ secrets.GITHUB_TOKEN }}
