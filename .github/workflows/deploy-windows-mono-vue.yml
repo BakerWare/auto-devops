@@ -1,0 +1,67 @@
+name: Deploy windows Vue Mono
+
+on:
+    workflow_call:
+        inputs:
+            applicationsMatrix:
+                type: string
+                required: true
+                description: "A JSON string with an 'apps' property eg toJSON({apps: ['meet-app', 'meet-bedrijf-app', 'meet-lab-app']})"
+jobs:
+    build:
+        runs-on: ubuntu-latest
+        steps:
+            -   uses: actions/checkout@v3
+            -   name: Checkout ansible
+                uses: actions/checkout@v3
+                with:
+                    repository: bakerware/ansible-playbooks
+                    ref: the-great-migration
+                    token: ${{ secrets.ACTION_ACCESS_TOKEN }}
+                    path: ansible
+            -   uses: actions/setup-node@v3
+                with:
+                    cache: npm
+                    node-version: 16
+            -   name: Setup .env files
+                # I might be able to pull applications from input..
+                run: |
+                    read -r -a applications <<< "${{ secrets.MONO_APPLICATIONS }}";
+                    for application in "${applications[@]}";
+                        do
+                            cp apps/${application}/.env.prod.${{ github.event.inputs.environment }} apps/${application}/.env;
+                    done;
+            -   name: Run build
+                run: |
+                    npm config set @bakerware:registry  https://npm.pkg.github.com
+                    npm config set //npm.pkg.github.com/:_authToken "${{ secrets.ACTION_ACCESS_TOKEN }}"
+                    npm ci
+                    npm run build
+            -   name: Compress workspace
+                run: tar --exclude='node_modules' -zcf /tmp/vivid-env.tar.gz .
+            -   name: Upload workspace
+                uses: actions/upload-artifact@v3
+                with:
+                    name: workspace
+                    path: /tmp/vivid-env.tar.gz
+    deploy:
+        needs: build
+        runs-on: ubuntu-latest
+        strategy:
+            matrix: ${{ fromJSON(inputs.applicationsMatrix) }}
+        steps:
+            -   name: Download artifacts
+                uses: actions/download-artifact@v3
+                with:
+                    name: workspace
+                    path: /tmp
+            -   name: Extract workspace
+                run: |
+                    tar -xf /tmp/vivid-env.tar.gz -C ./
+            -   name: Deploy
+                uses: rfreij/ansible-playbook-docker-action@master
+                with:
+                    playbookName: "ansible/vue/playbook.yml"
+                    inventoryFile: "apps/${{ matrix.app }}/ansible/inventories/${{ github.event.inputs.environment }}/hosts.yml"
+                    vaultPass: ${{secrets.ANSIBLE_VAULT_PASSWORD}}
+                    extraVars: "-e ansible_user=${{secrets.ANSIBLE_USER}} -e ansible_password=${{secrets.ANSIBLE_PASSWORD}}"
