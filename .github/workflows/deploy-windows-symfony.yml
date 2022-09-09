@@ -18,7 +18,7 @@ jobs:
                     repository: bakerware/ansible-playbooks
                     ref: the-great-migration
                     token: ${{ secrets.ACTION_ACCESS_TOKEN }}
-                    path: playbooks
+                    path: ansible/playbook
             -   name: Add HTTP basic auth credentials
                 run: echo '${{ secrets.COMPOSER_AUTH_JSON }}' > $GITHUB_WORKSPACE/auth.json
             -   id: supported-versions-matrix
@@ -26,8 +26,8 @@ jobs:
             -   name: Install dependencies
                 uses: php-actions/composer@v6
                 with:
-                    php_version: ${{ steps.supported-versions-matrix.outputs.highest}}
-                    php_extensions: calendar
+                    php_version: ${{ steps.supported-versions-matrix.outputs.lowest}}
+                    php_extensions: gd xsl zip
             -   name: Remove auth.json file
                 run: rm -f $GITHUB_WORKSPACE/auth.json
             -   name: Compress workspace
@@ -52,7 +52,7 @@ jobs:
             -   name: Deploy
                 uses: rfreij/ansible-playbook-docker-action@master
                 with:
-                    playbookName: "playbooks/symfony/playbook.yml"
+                    playbookName: "ansible/playbook/symfony/playbook.yml"
                     inventoryFile: "ansible/inventories/${{ github.event.inputs.environment }}/hosts.yml"
                     keyFileVaultPass: ${{secrets.ANSIBLE_VAULT_PASSWORD}}
                     extraVars: "-e ansible_user=${{secrets.ANSIBLE_USER}} -e ansible_password=${{secrets.ANSIBLE_PASSWORD}}"
