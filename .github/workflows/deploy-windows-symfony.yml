@@ -1,0 +1,69 @@
+name: Deploy windows Vue
+
+on:
+    workflow_call:
+        inputs:
+            slackChannel:
+                type: string
+                required: false
+                default: team-dart-builds
+jobs:
+    build:
+        runs-on: ubuntu-latest
+        steps:
+            -   uses: actions/checkout@v3
+            -   name: Checkout ansible
+                uses: actions/checkout@v3
+                with:
+                    repository: bakerware/ansible-playbooks
+                    ref: the-great-migration
+                    token: ${{ secrets.ACTION_ACCESS_TOKEN }}
+                    path: playbooks
+            -   name: Add HTTP basic auth credentials
+                run: echo '${{ secrets.COMPOSER_AUTH_JSON }}' > $GITHUB_WORKSPACE/auth.json
+            -   id: supported-versions-matrix
+                uses: WyriHaximus/github-action-composer-php-versions-in-range@v1
+            -   name: Install dependencies
+                uses: php-actions/composer@v6
+                with:
+                    php_version: ${{ steps.supported-versions-matrix.outputs.highest}}
+                    php_extensions: calendar
+            -   name: Remove auth.json file
+                run: rm -f $GITHUB_WORKSPACE/auth.json
+            -   name: Compress workspace
+                run: tar -zcf /tmp/vivid-env.tar.gz .
+            -   name: Upload workspace
+                uses: actions/upload-artifact@v3
+                with:
+                    name: workspace
+                    path: /tmp/vivid-env.tar.gz
+    deploy:
+        needs: build
+        runs-on: ubuntu-latest
+        steps:
+            -   name: Download artifacts
+                uses: actions/download-artifact@v3
+                with:
+                    name: workspace
+                    path: /tmp
+            -   name: Extract workspace
+                run: |
+                    tar -xf /tmp/vivid-env.tar.gz -C ./
+            -   name: Deploy
+                uses: rfreij/ansible-playbook-docker-action@master
+                with:
+                    playbookName: "playbooks/symfony/playbook.yml"
+                    inventoryFile: "ansible/inventories/${{ github.event.inputs.environment }}/hosts.yml"
+                    keyFileVaultPass: ${{secrets.ANSIBLE_VAULT_PASSWORD}}
+                    extraVars: "-e ansible_user=${{secrets.ANSIBLE_USER}} -e ansible_password=${{secrets.ANSIBLE_PASSWORD}}"
+            -   name: Slack Notification
+                uses: rtCamp/action-slack-notify@v2
+                env:
+                    SLACK_CHANNEL: ${{ inputs.slackChannel }}
+                    SLACK_USERNAME: 'BerryBot'
+                    SLACK_ICON: 'https://cdn-icons-png.flaticon.com/512/1514/1514967.png'
+                    SLACK_FOOTER: "Please close any Zendesk ticket that was fixed in this deployment"
+                    SLACK_MESSAGE: "Uhm, hier iets met Jira release? "
+                    SLACK_COLOR: 'good'
+                    SLACK_TITLE: "${{ github.event.repository.name }} Has been deployed"
+                    SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
