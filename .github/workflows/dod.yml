@@ -19,11 +19,15 @@ jobs:
                 if: steps.check_files.outputs.files_exists == 'false'
                 run: |
                     echo "dod:" > dod.yaml
-                    echo "  - 'Applicatie/Package is handmatig getest'" >> dod.yaml
-                    echo "  - 'Eventuele documentatie is aangepast'" >> dod.yaml
+                    echo "  - 'Code is volgens taak beschrijving en taak specifieke Definition of Done'" >> dod.yaml
+                    echo "  - 'Code is geautomatiseerd getest'" >> dod.yaml
+                    echo "  - 'Code is traceerbaar naar JIRA issue'" >> dod.yaml
+                    echo "  - 'Code is gedocumenteerd'" >> dod.yaml
+                    echo "  - 'Code is geformateerd'" >> dod.yaml
 
             -   name: Check DoD
                 uses: platisd/definition-of-done@master
                 with:
                     dod_yaml: 'dod.yaml'
                     github_token: ${{ secrets.GITHUB_TOKEN }}
+
