@@ -1,0 +1,73 @@
+name: Build and test symfony
+
+on:
+    workflow_call:
+
+jobs:
+    build:
+        runs-on: ubuntu-latest
+        steps:
+            -   uses: actions/checkout@v3
+            -   name: Checkout ansible
+            -   name: Add HTTP basic auth credentials
+                run: echo '${{ secrets.COMPOSER_AUTH_JSON }}' > $GITHUB_WORKSPACE/auth.json
+            -   id: supported-versions-matrix
+                uses: WyriHaximus/github-action-composer-php-versions-in-range@v1
+            -   name: Install dependencies
+                uses: php-actions/composer@v6
+                with:
+                    php_version: ${{ steps.supported-versions-matrix.outputs.lowest}}
+                    php_extensions: gd xsl zip
+            -   name: Remove auth.json file
+                run: rm -f $GITHUB_WORKSPACE/auth.json
+            -   name: Compress workspace
+                run: tar -zcf /tmp/vivid-env.tar.gz .
+            -   name: Upload workspace
+                uses: actions/upload-artifact@v3
+                with:
+                    name: workspace
+                    path: /tmp/vivid-env.tar.gz
+    test:
+        needs: build
+        runs-on: ubuntu-latest
+        steps:
+            -   name: Download artifacts
+                uses: actions/download-artifact@v3
+                with:
+                    name: workspace
+                    path: /tmp
+            -   name: Extract workspace
+                run: |
+                    tar -xf /tmp/vivid-env.tar.gz -C ./
+            -   name: Setup Mysql
+                uses: mirromutth/mysql-action@v1.1
+                with:
+                    mysql version: '5.7'
+                    mysql database: phpunit
+                    mysql user: runner
+                    mysql root password: password
+                    mysql password: password
+            -   name: "Check file existence"
+                uses: andstor/file-existence-action@v1
+                id: check_files
+                with:
+                    files: "phpunit.xml.dist"
+                    allow_failure: false
+            -   name: PHPUnit Tests
+                if: steps.check_files.outputs.files_exists == 'true'
+                run: php bin/phpunit --coverage-clover="output/code-coverage/clover.xml"
+                env:
+                    MYSQL_DATABASE: phpunit
+                    MYSQL_USER: runner
+                    MYSQL_ROOT_PASSWORD: password
+                    MYSQL_PASSWORD: password
+                    DATABASE_HOST: mysql
+                    DATABASE_PORT: 3306
+                    DATABASE_NAME: phpunit
+                    DATABASE_USER: root
+                    DATABASE_PASSWORD: password
+            -   name: Coverage Report as Comment (Clover)
+                if: steps.check_files.outputs.files_exists == 'true' && github.event_name == 'pull_request'
+                uses: lucassabreu/comment-coverage-clover@main
+                with:
+                    file: output/code-coverage/clover.xml
