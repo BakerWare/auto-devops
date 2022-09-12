@@ -8,7 +8,6 @@ jobs:
         runs-on: ubuntu-latest
         steps:
             -   uses: actions/checkout@v3
-            -   name: Checkout ansible
             -   name: Add HTTP basic auth credentials
                 run: echo '${{ secrets.COMPOSER_AUTH_JSON }}' > $GITHUB_WORKSPACE/auth.json
             -   id: supported-versions-matrix
