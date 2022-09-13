@@ -78,5 +78,5 @@ jobs:
                     SLACK_FOOTER: "Please close any Zendesk ticket that was fixed in this deployment"
                     SLACK_MESSAGE: "Uhm, hier iets met Jira release? "
                     SLACK_COLOR: 'good'
-                    SLACK_TITLE: "${{ matrix.app }} Has been deployed"
+                    SLACK_TITLE: "Environment ${{ github.event.inputs.environment }} of ${{ matrix.app }} Has been deployed"
                     SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
