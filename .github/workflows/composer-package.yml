@@ -25,6 +25,7 @@ jobs:
             -   name: Install dependencies
                 uses: php-actions/composer@v6
                 with:
+                    command: composer config --global --auth http-basic.bakerware.repo.repman.bwnet.nl token ${{ secrets.REPMAN_KEY }}
                     php_version: ${{ secrets.PHP_VERSION || steps.supported-versions-matrix.outputs.highest }}
                     php_extensions: calendar gd
             -   name: Remove auth.json file
