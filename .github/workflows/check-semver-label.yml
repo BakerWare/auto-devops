@@ -1,0 +1,29 @@
+name: Check the pull request if it contains a semver label
+
+on:
+    workflow_call:
+
+jobs:
+    check_semver:
+        name: Check semver label
+        runs-on: ubuntu-latest
+        steps:
+            -   uses: docker://agilepathway/pull-request-label-checker:latest
+                id: semver_check
+                with:
+                    one_of: major,minor,patch
+                    repo_token: ${{ secrets.GITHUB_TOKEN }}
+            -   name: Comment on pull request
+                if: ${{ failure() && steps.semver_check.outputs.label_check == 'failure' }}
+                uses: thollander/actions-comment-pull-request@v1
+                with:
+                    message: 'AUTOMATIC RELEASE: Release label is not found on pull request, please add one of major,minor,patch based on code changes.'
+                    comment_includes: 'AUTOMATIC RELEASE:'
+                    GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+            -   name: Comment on pull request
+                if: ${{ success() && steps.semver_check.outputs.label_check == 'success' }}
+                uses: thollander/actions-comment-pull-request@v1
+                with:
+                    message: 'AUTOMATIC RELEASE: Release label found, Automatic release will publish a new ${{ join(github.event.issue.labels.*.name, ', ') }} version when merged.'
+                    comment_includes: 'AUTOMATIC RELEASE:'
+                    GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
