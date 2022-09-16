@@ -27,10 +27,13 @@ jobs:
                 with:
                     ref: ${{ github.head_ref }}
             -   name: Push tag
-                uses: actions-ecosystem/action-push-tag@v1
-                with:
-                    tag: ${{ needs.semver.outputs.tag }}
-                    message: '${{ needs.semver.outputs.tag }}: PR #${{ github.event.pull_request.number }} ${{ github.event.pull_request.title }}'
+                run: |
+                    tag=${{ needs.semver.outputs.tag }}
+                    message='${{ needs.semver.outputs.tag }}: PR #${{ github.event.pull_request.number }} ${{ github.event.pull_request.title }}'
+                    git config user.name "${GITHUB_ACTOR}"
+                    git config user.email "${GITHUB_ACTOR}@users.noreply.github.com"
+                    git tag -a "${tag}" -m "${message}" 
+                    git push origin "${tag}"
     npm_version:
         runs-on: ubuntu-latest
         needs: semver
