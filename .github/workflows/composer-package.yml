@@ -26,7 +26,7 @@ jobs:
                 uses: php-actions/composer@v6
                 with:
                     php_version: ${{ secrets.PHP_VERSION || steps.supported-versions-matrix.outputs.highest }}
-                    php_extensions: calendar gd
+                    php_extensions: calendar gd zip
             -   name: Remove auth.json file
                 run: rm -f $GITHUB_WORKSPACE/auth.json
             -   name: "Check file existence"
