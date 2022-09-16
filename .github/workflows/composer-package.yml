@@ -25,8 +25,8 @@ jobs:
             -   name: Install dependencies
                 uses: php-actions/composer@v6
                 with:
-                    php_version: ${{ steps.supported-versions-matrix.outputs.highest}}
-                    php_extensions: calendar
+                    php_version: "${{ secrets.PHP_VERSION ? secrets.PHP_VERSION : steps.supported-versions-matrix.outputs.highest }}"
+                    php_extensions: calendar gd
             -   name: Remove auth.json file
                 run: rm -f $GITHUB_WORKSPACE/auth.json
             -   name: "Check file existence"
