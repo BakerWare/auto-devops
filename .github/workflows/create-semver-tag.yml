@@ -52,16 +52,5 @@ jobs:
                 with:
                     token: ${{ secrets.ACTION_ACCESS_TOKEN }}
                     ref: ${{ github.event.repository.default_branch }}
-            -   name: 'Automated Version Bump'
-                uses: 'phips28/gh-action-bump-version@master'
-                env:
-                    GITHUB_TOKEN: ${{ secrets.ACTION_ACCESS_TOKEN }}
-                with:
-                    minor-wording: ''
-                    major-wording: ''
-                    patch-wording: ''
-                    rc-wording: ''
-                    default: ${{ needs.semver.outputs.tag }}
-                    tag-prefix: 'v'
-                    target-branch: ${{ github.event.repository.default_branch }}
-                    bump-policy: 'ignore'
+            -   name: Run npm version
+                run: npm version ${{ needs.semver.outputs.tag }}
