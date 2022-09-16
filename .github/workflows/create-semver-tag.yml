@@ -52,5 +52,5 @@ jobs:
                 with:
                     token: ${{ secrets.ACTION_ACCESS_TOKEN }}
                     ref: ${{ github.event.repository.default_branch }}
-            -   name: Run npm version
+            -   name: Run npm version --allow-same-version
                 run: npm version ${{ needs.semver.outputs.tag }}
