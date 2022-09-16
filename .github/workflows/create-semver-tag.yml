@@ -48,10 +48,8 @@ jobs:
         needs: semver
         if: startsWith(github.event.repository.name, 'ts-')
         steps:
-            -   uses: actions/checkout@v2
+            -   uses: 'actions/checkout@v2'
                 with:
-                    persist-credentials: false
-                    token: ${{ secrets.ACTION_ACCESS_TOKEN }}
                     ref: ${{ github.event.repository.default_branch }}
             -   name: 'Automated Version Bump'
                 uses: 'phips28/gh-action-bump-version@master'
