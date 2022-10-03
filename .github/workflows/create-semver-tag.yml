@@ -52,6 +52,15 @@ jobs:
                 with:
                     token: ${{ secrets.ACTION_ACCESS_TOKEN }}
                     ref: ${{ github.event.repository.default_branch }}
+            -   uses: actions/setup-node@v3
+                with:
+                    node-version: 16
+                    registry-url: https://npm.pkg.github.com
+            -   name: npm install and build
+                run: |
+                    npm config set @bakerware:registry  https://npm.pkg.github.com
+                    npm config set //npm.pkg.github.com/:_authToken "${{ secrets.ACTION_ACCESS_TOKEN }}"
+                    npm ci
             -   name: Run npm version --allow-same-version
                 run: |
                     git config user.name "${GITHUB_ACTOR}"
