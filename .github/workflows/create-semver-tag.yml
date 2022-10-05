@@ -16,14 +16,14 @@ jobs:
         steps:
             -   uses: actions/checkout@v2
             -   name: Retrieve latest merged, git tag
-                run: |
-                    prefixedVersion=$(git tag --list --sort v:refname --merged | tail -1)
-                    version=${prefixedVersion#v}
-            -   name: echo version
-                run: echo $version
-            -   name: output latest tag
                 id: latestTag
-                run: echo ::set-output name=latest_tag::$version
+                run: |
+                    git tag --list --sort v:refname --merged | tail -1
+                    git tag --list --sort v:refname --merged | tail -1 >> $prefixedVersion
+                    echo ::set-output name=LATEST_TAG::$prefixedVersion
+                shell: bash
+            -   name: echo version
+                run: echo ${{ steps.latestTag.outputs.LATEST_TAG }}
             -   uses: actions-ecosystem/action-bump-semver@v1
                 id: semver
                 with:
