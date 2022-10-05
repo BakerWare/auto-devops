@@ -23,8 +23,8 @@ jobs:
             -   name: Retrieve latest merged, git tag
                 id: latestTag
                 run: |
-                    git tag --list --sort v:refname --merged | tail -1 >> $prefixedVersion
-                    echo ::set-output name=LATEST_TAG::$prefixedVersion
+                    version=$(git tag --list --sort v:refname --merged | tail -1)
+                    echo ::set-output name=LATEST_TAG::$version
                 shell: bash
             -   name: echo version
                 run: echo ${{ steps.latestTag.outputs.LATEST_TAG }}
