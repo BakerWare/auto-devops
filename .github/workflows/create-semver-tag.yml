@@ -15,11 +15,6 @@ jobs:
             tag: ${{ steps.semver.outputs.new_version }}
         steps:
             -   uses: actions/checkout@v2
-            -   name: Prepare version string
-                uses: jacobtomlinson/gha-find-replace@v2
-                with:
-                    find: "v"
-                    replace: ""
             -   name: Retrieve latest merged, git tag
                 id: latest-tag
                 run: |
