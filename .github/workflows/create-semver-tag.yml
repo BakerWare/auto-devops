@@ -16,15 +16,16 @@ jobs:
         steps:
             -   uses: actions/checkout@v2
             -   name: Retrieve latest merged, git tag
-                id: latest-tag
+                id: latestTag
                 run: |
                     prefixedVersion=$(git tag --list --sort v:refname --merged | tail -1)
                     version=${prefixedVersion#v}
+                    echo $version
                     echo "::set-output name=latest_tag::$version"
             -   uses: actions-ecosystem/action-bump-semver@v1
                 id: semver
                 with:
-                    current_version: ${{ steps.latest-tag.outputs.latest_tag }}
+                    current_version: ${{ steps.latestTag.outputs.latest_tag }}
                     level: ${{ (contains(github.event.issue.labels.*.name, 'major') && 'major') || (contains(github.event.issue.labels.*.name, 'minor') && 'minor') || 'patch' }}
     composer_version:
         runs-on: ubuntu-latest
