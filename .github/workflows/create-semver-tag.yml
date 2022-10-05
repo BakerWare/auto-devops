@@ -16,14 +16,18 @@ jobs:
         steps:
             -   uses: actions/checkout@v2
                 with:
+                    fetch-depth: 0
                     persist-credentials: false
                     token: ${{ secrets.ACTION_ACCESS_TOKEN }}
                     ref: ${{ github.event.repository.default_branch }}
             -   name: Retrieve latest merged, git tag
                 id: latestTag
                 run: |
-                    git tag --list --sort v:refname --merged | tail -1
-
+                    git tag --list --sort v:refname --merged | tail -1 >> $prefixedVersion
+                    echo ::set-output name=LATEST_TAG::$prefixedVersion
+                shell: bash
+            -   name: echo version
+                run: echo ${{ steps.latestTag.outputs.LATEST_TAG }}
             -   uses: actions-ecosystem/action-bump-semver@v1
                 id: semver
                 with:
