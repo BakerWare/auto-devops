@@ -13,15 +13,18 @@ jobs:
         if: github.event.pull_request.merged
         outputs:
             tag: ${{ steps.semver.outputs.new_version }}
+            latest_tag: ${{
         steps:
             -   uses: actions/checkout@v2
             -   name: Retrieve latest merged, git tag
                 run: |
                     prefixedVersion=$(git tag --list --sort v:refname --merged | tail -1)
                     version=${prefixedVersion#v}
+            -   name: echo version
+                run: echo $version
             -   name: output latest tag
                 id: latestTag
-                run: echo "::set-output name=latest_tag::${version}"
+                run: echo ::set-output name=latest_tag::$version
             -   uses: actions-ecosystem/action-bump-semver@v1
                 id: semver
                 with:
