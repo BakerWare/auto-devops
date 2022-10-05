@@ -15,10 +15,16 @@ jobs:
             tag: ${{ steps.semver.outputs.new_version }}
         steps:
             -   uses: actions/checkout@v2
+            -   name: Prepare version string
+                uses: jacobtomlinson/gha-find-replace@v2
+                with:
+                    find: "v"
+                    replace: ""
             -   name: Retrieve latest merged, git tag
                 id: latest-tag
                 run: |
-                    version=$(git tag --list --sort v:refname --merged | tail -1)
+                    prefixedVersion=$(git tag --list --sort v:refname --merged | tail -1)
+                    version=${prefixedVersion#v}
                     echo "::set-output name=latest_tag::$version"
             -   uses: actions-ecosystem/action-bump-semver@v1
                 id: semver
