@@ -6,21 +6,25 @@ on:
 env:
     GITHUB_TOKEN: ${{ secrets.ACTION_ACCESS_TOKEN }}
 
+
 jobs:
     semver:
         runs-on: ubuntu-latest
         if: github.event.pull_request.merged
         outputs:
-            tag: ${{ steps.semver.outputs.tag }}
+            tag: ${{ steps.semver.outputs.new_version }}
         steps:
-            -   name: Tag
+            -   uses: actions/checkout@v2
+            -   name: Retrieve latest merged, git tag
+                id: latest-tag
+                run: |
+                    version=$(git tag --list --sort v:refname --merged | tail -1)
+                    echo "::set-output name=latest_tag::$version"
+            -   uses: actions-ecosystem/action-bump-semver@v1
                 id: semver
-                uses: K-Phoen/semver-release-action@master
                 with:
-                    release_branch: main
-                    release_strategy: none
-                env:
-                    GITHUB_TOKEN: ${{ secrets.ACTION_ACCESS_TOKEN }}
+                    current_version: ${{ steps.latest-tag.outputs.latest_tag }}
+                    level: ${{ (contains(github.event.issue.labels.*.name, 'major') && 'major') || (contains(github.event.issue.labels.*.name, 'minor') && 'minor') || 'patch' }}
     composer_version:
         runs-on: ubuntu-latest
         needs: semver
