@@ -13,7 +13,6 @@ jobs:
         if: github.event.pull_request.merged
         outputs:
             tag: ${{ steps.semver.outputs.new_version }}
-            latest_tag: ${{
         steps:
             -   uses: actions/checkout@v2
             -   name: Retrieve latest merged, git tag
