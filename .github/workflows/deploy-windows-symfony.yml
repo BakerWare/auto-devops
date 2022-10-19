@@ -1,4 +1,4 @@
-name: Deploy windows Vue
+name: Deploy windows Vue .
 
 on:
     workflow_call:
