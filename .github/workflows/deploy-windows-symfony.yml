@@ -57,6 +57,7 @@ jobs:
                     inventoryFile: "ansible/inventories/${{ github.event.inputs.environment }}/hosts.yml"
                     keyFileVaultPass: ${{secrets.ANSIBLE_VAULT_PASSWORD}}
                     extraVars: "-e ansible_user=${{secrets.ANSIBLE_USER}} -e ansible_password=${{secrets.ANSIBLE_PASSWORD}}"
+                    verbosity: "vv"
             -   name: Slack Notification
                 uses: rtCamp/action-slack-notify@v2
                 env:
