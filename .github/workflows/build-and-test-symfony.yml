@@ -20,7 +20,7 @@ jobs:
             -   name: Install dependencies
                 uses: Un1matr1x/gha_composer@issues/87
                 with:
-                    php_version: ${{ steps.supported-versions-matrix.outputs.lowest}}
+                    php_version: ${{ steps.supported-versions-matrix.outputs.lowest }}
                     php_extensions: gd xsl zip calendar redis imap intl soap
                     version: ${{ inputs.composerVersion }}
             -   name: Remove auth.json file
