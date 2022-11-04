@@ -16,7 +16,7 @@ jobs:
                 uses: php-actions/composer@v6
                 with:
                     php_version: ${{ steps.supported-versions-matrix.outputs.lowest}}
-                    php_extensions: gd xsl zip calendar redis soap intl soap
+                    php_extensions: gd xsl zip calendar redis imap intl soap
             -   name: Remove auth.json file
                 run: rm -f $GITHUB_WORKSPACE/auth.json
             -   name: Compress workspace
