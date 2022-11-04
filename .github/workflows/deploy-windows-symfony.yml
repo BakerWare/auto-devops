@@ -7,6 +7,10 @@ on:
                 type: string
                 required: false
                 default: team-dart-builds
+            composerVersion:
+                type: string
+                required: false
+                default: 2.2
 jobs:
     build:
         runs-on: ubuntu-latest
@@ -28,7 +32,7 @@ jobs:
                 with:
                     php_version: ${{ steps.supported-versions-matrix.outputs.lowest}}
                     php_extensions: gd xsl zip calendar redis imap intl soap
-                    version: 2.1.11
+                    version: ${{ inputs.composerVersion }}
             -   name: Remove auth.json file
                 run: rm -f $GITHUB_WORKSPACE/auth.json
             -   name: Compress workspace
