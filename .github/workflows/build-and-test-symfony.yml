@@ -2,6 +2,11 @@ name: Build and test symfony
 
 on:
     workflow_call:
+        inputs:
+            composerVersion:
+                type: string
+                required: false
+                default: 2.2
 
 jobs:
     build:
@@ -13,10 +18,11 @@ jobs:
             -   id: supported-versions-matrix
                 uses: WyriHaximus/github-action-composer-php-versions-in-range@v1
             -   name: Install dependencies
-                uses: php-actions/composer@v6
+                uses: Un1matr1x/gha_composer@issues/87
                 with:
                     php_version: ${{ steps.supported-versions-matrix.outputs.lowest}}
                     php_extensions: gd xsl zip calendar redis imap intl soap
+                    version: ${{ inputs.composerVersion }}
             -   name: Remove auth.json file
                 run: rm -f $GITHUB_WORKSPACE/auth.json
             -   name: Compress workspace
