@@ -27,7 +27,7 @@ jobs:
                 uses: Un1matr1x/gha_composer@issues/87
                 with:
                     php_version: ${{ steps.supported-versions-matrix.outputs.lowest}}
-                    php_extensions: gd xsl zip calendar redis soap intl
+                    php_extensions: gd xsl zip calendar redis soap intl soap
                     version: 2.1.11
             -   name: Remove auth.json file
                 run: rm -f $GITHUB_WORKSPACE/auth.json
