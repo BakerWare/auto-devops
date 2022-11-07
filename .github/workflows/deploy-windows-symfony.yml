@@ -16,6 +16,10 @@ jobs:
         runs-on: ubuntu-latest
         steps:
             -   uses: actions/checkout@v3
+            -   name: Make sure files and folders have correct rights
+                run: |
+                    chmod +x bin/console
+                    mkdir var && chmod g+w var
             -   name: Checkout ansible
                 uses: actions/checkout@v3
                 with:
