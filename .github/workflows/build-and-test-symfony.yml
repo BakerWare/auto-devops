@@ -11,6 +11,8 @@ on:
 jobs:
     build:
         runs-on: ubuntu-latest
+        outputs:
+            phpVersion: ${{ steps.supported-versions-matrix.outputs.lowest}}
         steps:
             -   uses: actions/checkout@v3
             -   name: Add HTTP basic auth credentials
@@ -44,6 +46,11 @@ jobs:
             -   name: Extract workspace
                 run: |
                     tar -xf /tmp/vivid-env.tar.gz -C ./
+            -   name: Setup PHP with PECL extension
+                uses: shivammathur/setup-php@v2
+                with:
+                    php-version: ${{ needs.build.outputs.phpVersion }}
+                    extensions: gd xsl zip calendar redis imap intl soap bz2
             -   name: Setup Mysql
                 uses: mirromutth/mysql-action@v1.1
                 with:
@@ -52,11 +59,11 @@ jobs:
                     mysql user: runner
                     mysql root password: password
                     mysql password: password
-            -   name: "Check file existence"
+            -   name: 'Check file existence'
                 uses: andstor/file-existence-action@v1
                 id: check_files
                 with:
-                    files: "phpunit.xml.dist"
+                    files: 'phpunit.xml.dist'
                     allow_failure: false
             -   name: Logging
                 run: |
