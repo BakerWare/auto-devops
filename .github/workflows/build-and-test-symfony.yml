@@ -58,6 +58,10 @@ jobs:
                 with:
                     files: "phpunit.xml.dist"
                     allow_failure: false
+            -   name: Logging
+                run: |
+                    which php
+                    php -v
             -   name: PHPUnit Tests
                 if: steps.check_files.outputs.files_exists == 'true'
                 run: php bin/phpunit --coverage-clover="output/code-coverage/clover.xml"
