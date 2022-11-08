@@ -71,6 +71,7 @@ jobs:
                     allow_failure: false
             -   name: Logging
                 run: |
+                    ls -la
                     which php
                     php -v
             -   name: PHPUnit Tests
