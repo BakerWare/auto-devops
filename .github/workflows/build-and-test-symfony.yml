@@ -50,6 +50,10 @@ jobs:
             -   name: Extract workspace
                 run: |
                     tar -xf /tmp/vivid-env.tar.gz -C ./
+            -   name: Make sure files and folders have correct rights
+                run: |
+                    chmod +x bin/console
+                    mkdir var && chmod g+w var
             -   name: Setup PHP with PECL extension
                 uses: shivammathur/setup-php@v2
                 with:
