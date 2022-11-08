@@ -18,7 +18,7 @@ jobs:
             -   name: Make sure files and folders have correct rights
                 run: |
                     chmod +x bin/console
-                    mkdir var && chmod g+w var
+                    mkdir -p var && chmod g+w var
             -   name: Add HTTP basic auth credentials
                 run: echo '${{ secrets.COMPOSER_AUTH_JSON }}' > $GITHUB_WORKSPACE/auth.json
             -   id: supported-versions-matrix
@@ -53,7 +53,7 @@ jobs:
             -   name: Make sure files and folders have correct rights
                 run: |
                     chmod +x bin/console
-                    mkdir var && chmod g+w var
+                    mkdir -p var && chmod g+w var
             -   name: Setup PHP with PECL extension
                 uses: shivammathur/setup-php@v2
                 with:
