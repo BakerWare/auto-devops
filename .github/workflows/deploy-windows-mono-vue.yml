@@ -23,9 +23,9 @@ jobs:
                     SLACK_CHANNEL: ${{ inputs.slackChannel }}
                     SLACK_USERNAME: 'BerryBot'
                     SLACK_ICON: 'https://cdn-icons-png.flaticon.com/512/1514/1514967.png'
-                    SLACK_MESSAGE: "Environment: ${{ github.event.inputs.environment }}. Application: ${{ matrix.app }}"
+                    SLACK_MESSAGE: "Ja Nick.. Dan krijg je hier wel weer leuke opmerkingen"
                     SLACK_COLOR: '#2196f3'
-                    SLACK_TITLE: "An application of ${{ github.event.repository.name }} has started deployment"
+                    SLACK_TITLE: "`${{ matrix.app }}` of `${{ github.event.repository.name }}` has started deployment to `${{ github.event.inputs.environment }}` environment"
                     SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
     build:
         needs: notify
@@ -66,7 +66,7 @@ jobs:
                     SLACK_ICON: 'https://cdn-icons-png.flaticon.com/512/1514/1514967.png'
                     SLACK_MESSAGE: "Helaas Nick..."
                     SLACK_COLOR: '#ff5252'
-                    SLACK_TITLE: "Failed building applications of ${{ github.event.repository.name }} "
+                    SLACK_TITLE: "Failed building applications of `${{ github.event.repository.name }}`"
                     SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
             -   name: Compress workspace
                 run: tar --exclude='node_modules' -zcf /tmp/vivid-env.tar.gz .
@@ -104,9 +104,9 @@ jobs:
                     SLACK_USERNAME: 'BerryBot'
                     SLACK_ICON: 'https://cdn-icons-png.flaticon.com/512/1514/1514967.png'
                     SLACK_FOOTER: "Please close any Zendesk ticket that was fixed in this deployment"
-                    SLACK_MESSAGE: "Environment: ${{ github.event.inputs.environment }}. Application: ${{ matrix.app }}"
+                    SLACK_MESSAGE: "Ja Nick.. Dan krijg je hier wel weer leuke opmerkingen"
                     SLACK_COLOR: 'good'
-                    SLACK_TITLE: "An application of ${{ github.event.repository.name }} has been deployment"
+                    SLACK_TITLE: "`${{ matrix.app }}` of `${{ github.event.repository.name }}` has been deployed to `${{ github.event.inputs.environment }}` environment"
                     SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
             -   name: Slack Notification
                 if: failure()
@@ -115,7 +115,7 @@ jobs:
                     SLACK_CHANNEL: ${{ inputs.slackChannel }}
                     SLACK_USERNAME: 'BerryBot'
                     SLACK_ICON: 'https://cdn-icons-png.flaticon.com/512/1514/1514967.png'
-                    SLACK_MESSAGE: "Environment: ${{ github.event.inputs.environment }}. Application: ${{ matrix.app }}"
+                    SLACK_MESSAGE: "Ja Nick.. Dan krijg je hier wel weer leuke opmerkingen"
                     SLACK_COLOR: '#ff5252'
-                    SLACK_TITLE: "Deployment of an application of ${{ github.event.repository.name }} has failed"
+                    SLACK_TITLE: "Deployment of `${{ matrix.app }}` of `${{ github.event.repository.name }}` to `${{ github.event.inputs.environment }}` environment has failed"
                     SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
