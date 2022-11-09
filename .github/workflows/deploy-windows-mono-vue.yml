@@ -57,13 +57,6 @@ jobs:
                     npm config set //npm.pkg.github.com/:_authToken "${{ secrets.ACTION_ACCESS_TOKEN }}"
                     npm ci
                     npm run build
-            -   name: Compress workspace
-                run: tar --exclude='node_modules' -zcf /tmp/vivid-env.tar.gz .
-            -   name: Upload workspace
-                uses: actions/upload-artifact@v3
-                with:
-                    name: workspace
-                    path: /tmp/vivid-env.tar.gz
             -   name: Slack Notification
                 if: failure()
                 uses: rtCamp/action-slack-notify@v2
@@ -75,6 +68,13 @@ jobs:
                     SLACK_COLOR: '#2196f3'
                     SLACK_TITLE: "An application of ${{ github.event.repository.name }} has started deployment"
                     SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
+            -   name: Compress workspace
+                run: tar --exclude='node_modules' -zcf /tmp/vivid-env.tar.gz .
+            -   name: Upload workspace
+                uses: actions/upload-artifact@v3
+                with:
+                    name: workspace
+                    path: /tmp/vivid-env.tar.gz
     deploy:
         needs: [ notify, build ]
         runs-on: ubuntu-latest
