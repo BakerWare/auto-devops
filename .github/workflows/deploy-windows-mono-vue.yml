@@ -64,9 +64,9 @@ jobs:
                     SLACK_CHANNEL: ${{ inputs.slackChannel }}
                     SLACK_USERNAME: 'BerryBot'
                     SLACK_ICON: 'https://cdn-icons-png.flaticon.com/512/1514/1514967.png'
-                    SLACK_MESSAGE: "Environment: ${{ github.event.inputs.environment }}. Application: ${{ matrix.app }}"
+                    SLACK_MESSAGE: ""
                     SLACK_COLOR: '#ff5252'
-                    SLACK_TITLE: "An application of ${{ github.event.repository.name }} has started deployment"
+                    SLACK_TITLE: "Failed building applications of ${{ github.event.repository.name }} "
                     SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
             -   name: Compress workspace
                 run: tar --exclude='node_modules' -zcf /tmp/vivid-env.tar.gz .
