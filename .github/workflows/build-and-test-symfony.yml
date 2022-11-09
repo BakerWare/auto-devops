@@ -15,8 +15,10 @@ jobs:
             phpVersion: ${{ steps.supported-versions-matrix.outputs.lowest}}
         steps:
             -   uses: actions/checkout@v3
-            -   name: Make sure bin/console has execute rights
-                run: chmod +x bin/console
+            -   name: Make sure files and folders have correct rights
+                run: |
+                    chmod +x bin/console
+                    mkdir -p var && chmod -R 777 var
             -   name: Add HTTP basic auth credentials
                 run: echo '${{ secrets.COMPOSER_AUTH_JSON }}' > $GITHUB_WORKSPACE/auth.json
             -   id: supported-versions-matrix
@@ -48,6 +50,10 @@ jobs:
             -   name: Extract workspace
                 run: |
                     tar -xf /tmp/vivid-env.tar.gz -C ./
+            -   name: Make sure files and folders have correct rights
+                run: |
+                    chmod +x bin/console
+                    mkdir -p var && chmod -R 777 var
             -   name: Setup PHP with PECL extension
                 uses: shivammathur/setup-php@v2
                 with:
@@ -69,6 +75,7 @@ jobs:
                     allow_failure: false
             -   name: Logging
                 run: |
+                    ls -la
                     which php
                     php -v
             -   name: PHPUnit Tests
