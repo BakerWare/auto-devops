@@ -12,7 +12,23 @@ on:
                 required: true
                 description: "A JSON string with an 'apps' property eg toJSON({apps: ['meet-app', 'meet-bedrijf-app', 'meet-lab-app']})"
 jobs:
+    notify:
+        runs-on: ubuntu-latest
+        strategy:
+            matrix: ${{ fromJSON(inputs.applicationsMatrix) }}
+        steps:
+            -   name: Slack Notification
+                uses: rtCamp/action-slack-notify@v2
+                env:
+                    SLACK_CHANNEL: ${{ inputs.slackChannel }}
+                    SLACK_USERNAME: 'BerryBot'
+                    SLACK_ICON: 'https://cdn-icons-png.flaticon.com/512/1514/1514967.png'
+                    SLACK_MESSAGE: "Environment: ${{ github.event.inputs.environment }}. Application: ${{ matrix.app }}"
+                    SLACK_COLOR: '#2196f3'
+                    SLACK_TITLE: "An application of ${{ github.event.repository.name }} has started deployment"
+                    SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
     build:
+        needs: notify
         runs-on: ubuntu-latest
         steps:
             -   uses: actions/checkout@v3
@@ -48,8 +64,19 @@ jobs:
                 with:
                     name: workspace
                     path: /tmp/vivid-env.tar.gz
+            -   name: Slack Notification
+                if: failure()
+                uses: rtCamp/action-slack-notify@v2
+                env:
+                    SLACK_CHANNEL: ${{ inputs.slackChannel }}
+                    SLACK_USERNAME: 'BerryBot'
+                    SLACK_ICON: 'https://cdn-icons-png.flaticon.com/512/1514/1514967.png'
+                    SLACK_MESSAGE: "Environment: ${{ github.event.inputs.environment }}. Application: ${{ matrix.app }}"
+                    SLACK_COLOR: '#2196f3'
+                    SLACK_TITLE: "An application of ${{ github.event.repository.name }} has started deployment"
+                    SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
     deploy:
-        needs: build
+        needs: [ notify, build ]
         runs-on: ubuntu-latest
         strategy:
             matrix: ${{ fromJSON(inputs.applicationsMatrix) }}
@@ -70,13 +97,25 @@ jobs:
                     keyFileVaultPass: ${{secrets.ANSIBLE_VAULT_PASSWORD}}
                     extraVars: "-e ansible_user=${{secrets.ANSIBLE_USER}} -e ansible_password=${{secrets.ANSIBLE_PASSWORD}}"
             -   name: Slack Notification
+                if: success()
                 uses: rtCamp/action-slack-notify@v2
                 env:
                     SLACK_CHANNEL: ${{ inputs.slackChannel }}
                     SLACK_USERNAME: 'BerryBot'
                     SLACK_ICON: 'https://cdn-icons-png.flaticon.com/512/1514/1514967.png'
                     SLACK_FOOTER: "Please close any Zendesk ticket that was fixed in this deployment"
-                    SLACK_MESSAGE: "Uhm, hier iets met Jira release? "
+                    SLACK_MESSAGE: "Environment: ${{ github.event.inputs.environment }}. Application: ${{ matrix.app }}"
                     SLACK_COLOR: 'good'
-                    SLACK_TITLE: "Environment ${{ github.event.inputs.environment }} of ${{ matrix.app }} Has been deployed"
+                    SLACK_TITLE: "An application of ${{ github.event.repository.name }} has been deployment"
+                    SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
+            -   name: Slack Notification
+                if: failure()
+                uses: rtCamp/action-slack-notify@v2
+                env:
+                    SLACK_CHANNEL: ${{ inputs.slackChannel }}
+                    SLACK_USERNAME: 'BerryBot'
+                    SLACK_ICON: 'https://cdn-icons-png.flaticon.com/512/1514/1514967.png'
+                    SLACK_MESSAGE: "Environment: ${{ github.event.inputs.environment }}. Application: ${{ matrix.app }}"
+                    SLACK_COLOR: '#ff5252'
+                    SLACK_TITLE: "Deployment of an application of ${{ github.event.repository.name }} has failed"
                     SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
