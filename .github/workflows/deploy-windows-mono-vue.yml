@@ -65,7 +65,7 @@ jobs:
                     SLACK_USERNAME: 'BerryBot'
                     SLACK_ICON: 'https://cdn-icons-png.flaticon.com/512/1514/1514967.png'
                     SLACK_MESSAGE: "Environment: ${{ github.event.inputs.environment }}. Application: ${{ matrix.app }}"
-                    SLACK_COLOR: '#2196f3'
+                    SLACK_COLOR: '#ff5252'
                     SLACK_TITLE: "An application of ${{ github.event.repository.name }} has started deployment"
                     SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
             -   name: Compress workspace
