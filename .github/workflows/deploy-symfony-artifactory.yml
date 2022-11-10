@@ -1,0 +1,71 @@
+name: Deploy Symfony to Artifactory
+
+on:
+    workflow_call:
+        inputs:
+            slackChannel:
+                type: string
+                required: false
+                default: team-dart-builds
+            composerVersion:
+                type: string
+                required: false
+                default: 2.2
+
+jobs:
+    build:
+        runs-on: ubuntu-latest
+        steps:
+            -   uses: actions/checkout@v3
+            -   name: Make sure files and folders have correct rights
+                run: |
+                    chmod +x bin/console
+                    mkdir var && chmod g+w var
+            -   name: Add HTTP basic auth credentials
+                run: echo '${{ secrets.COMPOSER_AUTH_JSON }}' > $GITHUB_WORKSPACE/auth.json
+            -   id: supported-versions-matrix
+                uses: WyriHaximus/github-action-composer-php-versions-in-range@v1
+            -   name: Install dependencies
+                uses: Un1matr1x/gha_composer@issues/87
+                with:
+                    php_version: ${{ steps.supported-versions-matrix.outputs.lowest}}
+                    php_extensions: gd xsl zip calendar redis imap intl soap bz2
+                    version: ${{ inputs.composerVersion }}
+            -   name: Remove auth.json file
+                run: rm -f $GITHUB_WORKSPACE/auth.json
+            -   name: Compress workspace
+                run: tar -zcf /tmp/vivid-env.tar.gz .
+            -   name: Upload workspace
+                uses: actions/upload-artifact@v3
+                with:
+                    name: workspace
+                    path: /tmp/vivid-env.tar.gz
+    deploy:
+        needs: build
+        runs-on: ubuntu-latest
+        steps:
+            -   name: Download artifacts
+                uses: actions/download-artifact@v3
+                with:
+                    name: workspace
+                    path: /tmp
+            -   name: Extract workspace
+                run: |
+                    tar -xf /tmp/vivid-env.tar.gz -C ./
+            -   name: Set output
+                id: vars
+                run: echo ::set-output name=tag::${GITHUB_REF#refs/*/}
+            -   uses: jfrog/setup-jfrog-cli@v3
+                env:
+                    JF_URL: ${{ secrets.ARTIFACTORY_URL }}
+                    JF_USER: ${{ secrets.ARTIFACTORY_USER }}
+                    JF_PASSWORD: ${{ secrets.ARTIFACTORY_PASSWORD }}
+            -   name: Archive Release
+                uses: thedoctor0/zip-release@main
+                with:
+                    type: 'zip'
+                    filename: 'release.zip'
+            -   name: Upload to artifactory
+                run: |
+                    jf rt u "release.zip" "${{ github.event.repository.name }}/${{ github.event.repository.name }}-${{github.sha}}.zip" --props="Version=${{ steps.vars.outputs.tag }}"
+
