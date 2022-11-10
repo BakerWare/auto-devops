@@ -13,6 +13,19 @@ on:
                 default: 2.2
 
 jobs:
+    notify:
+        runs-on: ubuntu-latest
+        steps:
+            -   name: Slack Notification
+                uses: rtCamp/action-slack-notify@v2
+                env:
+                    SLACK_CHANNEL: ${{ inputs.slackChannel }}
+                    SLACK_USERNAME: 'BerryBot'
+                    SLACK_ICON: 'https://cdn-icons-png.flaticon.com/512/1514/1514967.png'
+                    SLACK_MESSAGE: "Ja Nick.. Dan krijg je hier wel weer leuke opmerkingen"
+                    SLACK_COLOR: '#2196f3'
+                    SLACK_TITLE: "`${{ github.event.repository.name }}` has started Artifactory deployment"
+                    SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
     build:
         runs-on: ubuntu-latest
         steps:
@@ -31,6 +44,17 @@ jobs:
                     php_version: ${{ steps.supported-versions-matrix.outputs.lowest}}
                     php_extensions: gd xsl zip calendar redis imap intl soap bz2
                     version: ${{ inputs.composerVersion }}
+            -   name: Slack Notification
+                if: failure()
+                uses: rtCamp/action-slack-notify@v2
+                env:
+                    SLACK_CHANNEL: ${{ inputs.slackChannel }}
+                    SLACK_USERNAME: 'BerryBot'
+                    SLACK_ICON: 'https://cdn-icons-png.flaticon.com/512/1514/1514967.png'
+                    SLACK_MESSAGE: "Helaas Nick..."
+                    SLACK_COLOR: '#ff5252'
+                    SLACK_TITLE: "Failed installing composer dependencies and assets of `${{ github.event.repository.name }}`"
+                    SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
             -   name: Remove auth.json file
                 run: rm -f $GITHUB_WORKSPACE/auth.json
             -   name: Compress workspace
@@ -68,4 +92,27 @@ jobs:
             -   name: Upload to artifactory
                 run: |
                     jf rt u "release.zip" "${{ github.event.repository.name }}/${{ github.event.repository.name }}-${{github.sha}}.zip" --props="Version=${{ steps.vars.outputs.tag }}"
-
+            -   name: Slack Notification
+                if: success()
+                uses: rtCamp/action-slack-notify@v2
+                env:
+                    SLACK_CHANNEL: ${{ inputs.slackChannel }}
+                    SLACK_USERNAME: 'BerryBot'
+                    SLACK_ICON: 'https://cdn-icons-png.flaticon.com/512/1514/1514967.png'
+                    SLACK_FOOTER: "Please close any Zendesk ticket that was fixed in this deployment"
+                    SLACK_MESSAGE: "Ja Nick.. Dan krijg je hier wel weer leuke opmerkingen"
+                    SLACK_COLOR: 'good'
+                    SLACK_TITLE: "Created artifactory artifact for `${{ github.event.repository.name }}` with name `${{ github.event.repository.name }}/${{ github.event.repository.name }}-${{github.sha}}.zip`"
+                    SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
+            -   name: Slack Notification
+                if: success()
+                uses: rtCamp/action-slack-notify@v2
+                env:
+                    SLACK_CHANNEL: ${{ inputs.slackChannel }}
+                    SLACK_USERNAME: 'BerryBot'
+                    SLACK_ICON: 'https://cdn-icons-png.flaticon.com/512/1514/1514967.png'
+                    SLACK_FOOTER: " "
+                    SLACK_MESSAGE: "Ja Nick.. Dan krijg je hier wel weer leuke opmerkingen"
+                    SLACK_COLOR: 'good'
+                    SLACK_TITLE: "Failed creating artifactory artifact for `${{ github.event.repository.name }}`"
+                    SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
