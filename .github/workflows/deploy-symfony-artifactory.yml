@@ -86,7 +86,7 @@ jobs:
                     JF_USER: ${{ secrets.ARTIFACTORY_USER }}
                     JF_PASSWORD: ${{ secrets.ARTIFACTORY_PASSWORD }}
                 with:
-                    version: 1.9.0
+                    version: 1.54.1
             -   name: Archive Release
                 uses: thedoctor0/zip-release@main
                 with:
@@ -116,6 +116,6 @@ jobs:
                     SLACK_ICON: 'https://cdn-icons-png.flaticon.com/512/1514/1514967.png'
                     SLACK_FOOTER: " "
                     SLACK_MESSAGE: "Ja Nick.. Dan krijg je hier wel weer leuke opmerkingen"
-                    SLACK_COLOR: 'good'
+                    SLACK_COLOR: '#ff5252'
                     SLACK_TITLE: "Failed creating artifactory artifact for `${{ github.event.repository.name }}`"
                     SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
