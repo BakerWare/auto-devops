@@ -28,6 +28,7 @@ jobs:
                     SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
     build:
         runs-on: ubuntu-latest
+        needs: notify
         steps:
             -   uses: actions/checkout@v3
             -   name: Make sure files and folders have correct rights
@@ -105,7 +106,7 @@ jobs:
                     SLACK_TITLE: "Created artifactory artifact for `${{ github.event.repository.name }}` with name `${{ github.event.repository.name }}/${{ github.event.repository.name }}-${{github.sha}}.zip`"
                     SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
             -   name: Slack Notification
-                if: success()
+                if: failure()
                 uses: rtCamp/action-slack-notify@v2
                 env:
                     SLACK_CHANNEL: ${{ inputs.slackChannel }}
