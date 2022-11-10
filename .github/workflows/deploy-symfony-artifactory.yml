@@ -85,6 +85,8 @@ jobs:
                     JF_URL: ${{ secrets.ARTIFACTORY_URL }}
                     JF_USER: ${{ secrets.ARTIFACTORY_USER }}
                     JF_PASSWORD: ${{ secrets.ARTIFACTORY_PASSWORD }}
+                with:
+                    version: 1.9.0
             -   name: Archive Release
                 uses: thedoctor0/zip-release@main
                 with:
@@ -92,7 +94,7 @@ jobs:
                     filename: 'release.zip'
             -   name: Upload to artifactory
                 run: |
-                    jf rt u "release.zip" "${{ github.event.repository.name }}/${{ github.event.repository.name }}-${{github.sha}}.zip"
+                    jf rt u "release.zip" "${{ github.event.repository.name }}/${{ github.event.repository.name }}-${{github.sha}}.zip" --props="Version=${{ steps.vars.outputs.tag }}"
             -   name: Slack Notification
                 if: success()
                 uses: rtCamp/action-slack-notify@v2
