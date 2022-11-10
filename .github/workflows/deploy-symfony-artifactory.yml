@@ -91,7 +91,7 @@ jobs:
                     filename: 'release.zip'
             -   name: Upload to artifactory
                 run: |
-                    jf rt u "release.zip" "${{ github.event.repository.name }}/${{ github.event.repository.name }}-${{github.sha}}.zip" --props="Version=${{ steps.vars.outputs.tag }}"
+                    jf rt u "release.zip" "${{ github.event.repository.name }}/${{ github.event.repository.name }}-${{github.sha}}.zip"
             -   name: Slack Notification
                 if: success()
                 uses: rtCamp/action-slack-notify@v2
