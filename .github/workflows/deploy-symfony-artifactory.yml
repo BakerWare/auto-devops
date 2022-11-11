@@ -40,7 +40,7 @@ jobs:
             -   id: supported-versions-matrix
                 uses: WyriHaximus/github-action-composer-php-versions-in-range@v1
             -   name: Install dependencies
-                uses: Un1matr1x/gha_composer@issues/87
+                uses: php-actions/composer@v6
                 with:
                     php_version: ${{ steps.supported-versions-matrix.outputs.lowest}}
                     php_extensions: gd xsl zip calendar redis imap intl soap bz2
