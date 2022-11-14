@@ -73,7 +73,7 @@ jobs:
                     SLACK_USERNAME: 'BerryBot'
                     SLACK_ICON: 'https://cdn-icons-png.flaticon.com/512/1514/1514967.png'
                     SLACK_FOOTER: "Please close any Zendesk ticket that was fixed in this deployment"
-                    SLACK_MESSAGE: "Ja Nick."
+                    SLACK_MESSAGE: "Ja <@U02DDN0S5ED>."
                     SLACK_COLOR: 'good'
                     SLACK_TITLE: "Environment ${{ github.event.inputs.environment }} of ${{ github.event.repository.name }} Has been deployed"
                     SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
