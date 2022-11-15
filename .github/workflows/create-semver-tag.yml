@@ -28,7 +28,7 @@ jobs:
                 shell: bash
             -   name: Validate and retrieve version label
                 id: semverLabel
-                uses: netcreaties/has-one-of-label@v1
+                uses: netcreaties/has-one-of-label@v1.0.0
                 with:
                     labels: "patch,minor,major"
             -   uses: actions-ecosystem/action-bump-semver@v1
