@@ -31,9 +31,6 @@ jobs:
                 uses: netcreaties/has-one-of-label@v1
                 with:
                     labels: "patch,minor,major"
-            -   name: Exit if semver label is not found
-                if: steps.semverLabel.outputs.found === "no"
-                run: exit 1
             -   uses: actions-ecosystem/action-bump-semver@v1
                 id: semver
                 with:
