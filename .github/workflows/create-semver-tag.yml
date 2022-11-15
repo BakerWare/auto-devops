@@ -26,13 +26,16 @@ jobs:
                     version=$(git tag --list --sort v:refname --merged | tail -1)
                     echo ::set-output name=LATEST_TAG::$version
                 shell: bash
-            -   name: echo version
-                run: echo ${{ steps.latestTag.outputs.LATEST_TAG }}
+            -   name: Validate and retrieve version label
+                id: semverLabel
+                uses: netcreaties/has-one-of-label@v1
+                with:
+                    labels: "patch,minor,major"
             -   uses: actions-ecosystem/action-bump-semver@v1
                 id: semver
                 with:
                     current_version: ${{ steps.latestTag.outputs.latest_tag }}
-                    level: ${{ (contains(github.event.issue.labels.*.name, 'major') && 'major') || (contains(github.event.issue.labels.*.name, 'minor') && 'minor') || 'patch' }}
+                    level: ${{ steps.semverLabel.outputs.matched }}
     composer_version:
         runs-on: ubuntu-latest
         needs: semver
