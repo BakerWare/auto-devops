@@ -11,6 +11,10 @@ on:
                 type: string
                 required: false
                 default: 2.2
+            phpExtensions:
+                type: string
+                required: false
+                default: gd xsl zip calendar redis imap intl soap bz2
 
 jobs:
     notify:
@@ -43,7 +47,7 @@ jobs:
                 uses: php-actions/composer@v6
                 with:
                     php_version: ${{ steps.supported-versions-matrix.outputs.lowest}}
-                    php_extensions: gd xsl zip calendar redis imap intl soap bz2
+                    php_extensions: ${{ inputs.phpExtensions }}
                     version: ${{ inputs.composerVersion }}
             -   name: Slack Notification
                 if: failure()
