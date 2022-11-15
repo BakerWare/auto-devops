@@ -15,6 +15,10 @@ on:
                 type: string
                 required: false
                 default: gd xsl zip calendar redis imap intl soap bz2
+            artifactoryRepository:
+                type: string
+                required: false
+                default: ${{ github.event.repository.name }}
 
 jobs:
     notify:
@@ -98,7 +102,7 @@ jobs:
                     filename: 'release.zip'
             -   name: Upload to artifactory
                 run: |
-                    jf rt u "release.zip" "${{ github.event.repository.name }}/${{ github.event.repository.name }}-${{ steps.vars.outputs.tag }}.zip" --props="Version=${{ steps.vars.outputs.tag }}"
+                    jf rt u "release.zip" "${{ inputs.artifactoryRepository }}/${{ github.event.repository.name }}-${{ steps.vars.outputs.tag }}.zip" --props="Version=${{ steps.vars.outputs.tag }}"
             -   name: Slack Notification
                 if: success()
                 uses: rtCamp/action-slack-notify@v2
@@ -109,7 +113,7 @@ jobs:
                     SLACK_FOOTER: "Please close any Zendesk ticket that was fixed in this deployment"
                     SLACK_MESSAGE: "Ja Nick.. Dan krijg je hier wel weer leuke opmerkingen"
                     SLACK_COLOR: 'good'
-                    SLACK_TITLE: "Created artifactory artifact for `${{ github.event.repository.name }}` with name `${{ github.event.repository.name }}/${{ github.event.repository.name }}-${{github.sha}}.zip`"
+                    SLACK_TITLE: "Created artifactory artifact for `${{ github.event.repository.name }}` with name `${{ inputs.artifactoryRepository }}/${{ github.event.repository.name }}-${{ steps.vars.outputs.tag }}.zip`"
                     SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
             -   name: Slack Notification
                 if: failure()
