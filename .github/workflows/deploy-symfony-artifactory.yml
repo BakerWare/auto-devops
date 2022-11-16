@@ -105,15 +105,6 @@ jobs:
             -   uses: montudor/action-zip@v1
                 with:
                     args: zip -qq -r release.zip ${{ inputs.artifactPaths }}
-            -   name: Archive Release
-                uses: thedoctor0/zip-release@main
-                with:
-                    type: 'zip'
-                    filename: 'release.zip'
-            -   uses: vimtor/action-zip@v1
-                with:
-                    files: ${{ inputs.artifactPaths }}
-                    dest: release.zip
             -   name: Upload to artifactory
                 run: |
                     jf rt u "release.zip" "${{ inputs.artifactoryRepository }}/${{ github.event.repository.name }}-${{ steps.vars.outputs.tag }}.zip" --props="Version=${{ steps.vars.outputs.tag }}"
