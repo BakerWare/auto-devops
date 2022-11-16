@@ -22,7 +22,7 @@ on:
             artifactPaths:
                 type: string
                 required: false
-                default: 'bin config docs public scripts src templates vendor composer.json composer.lock VERSION'
+                default: 'bin/ config/ docs/ public/ scripts/ src/ templates/ vendor/ composer.json composer.lock VERSION'
 
 jobs:
     notify:
@@ -102,6 +102,9 @@ jobs:
             -   name: Create VERSION file
                 run: |
                     echo ${{ steps.vars.outputs.tag }} > VERSION
+            -   uses: montudor/action-zip@v1
+                with:
+                    args: zip -qq -r release.zip ${{ inputs.artifactPaths }}
             -   name: Archive Release
                 uses: thedoctor0/zip-release@main
                 with:
