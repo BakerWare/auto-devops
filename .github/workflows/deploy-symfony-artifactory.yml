@@ -70,9 +70,6 @@ jobs:
                     SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
             -   name: Remove auth.json file
                 run: rm -f $GITHUB_WORKSPACE/auth.json
-            -   name: Create VERSION file
-                run: |
-                    echo ${{ steps.vars.outputs.tag }} > VERSION
             -   name: Compress workspace
                 run: tar -zcf /tmp/vivid-env.tar.gz .
             -   name: Upload workspace
@@ -92,7 +89,7 @@ jobs:
             -   name: Extract workspace
                 run: |
                     tar -xf /tmp/vivid-env.tar.gz -C ./
-            -   name: Set output
+            -   name: Get tag
                 id: vars
                 run: echo ::set-output name=tag::${GITHUB_REF#refs/*/}
             -   uses: jfrog/setup-jfrog-cli@v3
@@ -102,6 +99,9 @@ jobs:
                     JF_PASSWORD: ${{ secrets.ARTIFACTORY_PASSWORD }}
                 with:
                     version: 1.54.1
+            -   name: Create VERSION file
+                run: |
+                    echo ${{ steps.vars.outputs.tag }} > VERSION
             -   name: Archive Release
                 uses: thedoctor0/zip-release@main
                 with:
