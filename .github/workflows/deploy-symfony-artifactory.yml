@@ -22,7 +22,7 @@ on:
             artifactPaths:
                 type: string
                 required: false
-                default: 'bin/ config/ docs/ public/ scripts/ src/ templates/ vendor/ composer.json composer.lock VERSION'
+                default: 'bin config docs public scripts src templates vendor composer.json composer.lock VERSION'
 
 jobs:
     notify:
