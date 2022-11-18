@@ -15,15 +15,20 @@ jobs:
         outputs:
             phpVersions: ${{ steps.php-requirements.outputs.version }}
             phpExtensions: ${{ steps.php-requirements.outputs.extensions }}
+            symfonyVersions: ${{ steps.symfonyVersions.outputs.extracted_versions }}
         steps:
             -   uses: actions/checkout@v3
             -   id: php-requirements
                 uses: WyriHaximus/github-action-composer-php-versions-in-range@v1
+            -   name: Change symfony versions to an array
+                id: symfonyVersions
+                run: |
+                    echo ::set-output name=EXTRACTED_VERSIONS::[${{ inputs.symfonyVersionMatrix }}]
     build-and-test:
         needs: php-requirements
         strategy:
             matrix:
-                symfonyVersion: ${{ inputs.symfonyVersionMatrix.split(',') }}
+                symfonyVersion: ${{ needs.php-requirements.outputs.symfonyVersions }}
                 phpVersion: ${{ needs.php-requirements.outputs.phpVersions }}
         runs-on: ubuntu-latest
         steps:
