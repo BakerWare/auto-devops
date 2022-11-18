@@ -25,7 +25,7 @@ jobs:
         continue-on-error: true
         strategy:
             matrix:
-                symfonyVersion: ${{ fromJSON(inputs.symfonyVersionMatrix) }}
+                symfonyVersion: ${{ fromJSON(inputs.symfonyVersionMatrix).symfony }}
                 phpVersion: ${{ fromJSON(needs.php-requirements.outputs.phpVersions) }}
         runs-on: ubuntu-latest
         steps:
@@ -35,24 +35,19 @@ jobs:
             -   uses: actions/checkout@v3
             -   name: Add HTTP basic auth credentials
                 run: echo '${{ secrets.COMPOSER_AUTH_JSON }}' > $GITHUB_WORKSPACE/auth.json
-            -   name: Update composer.json extra
-                uses: jossef/action-set-json-field@v2
-                with:
-                    file: composer.json
-                    field: extra
-                    value: '{"symfony": { "allow-contrib": "false", "require": "${{ matrix.symfonyVersion.version }}" } }'
-                    parse_json: true
-            -   name: Logging
-                run: |
-                    cat composer.json
             -   name: Setup PHP with PECL extension
                 uses: shivammathur/setup-php@v2
                 with:
                     php-version: ${{ matrix.phpVersion }}
                     extensions: ${{ join(fromJSON(needs.php-requirements.outputs.phpExtensions), ' ') }}
             -   name: Run composer commands
+                if: matrix.symfonyVersion.args == ''
                 run: |
-                    composer install ${{ matrix.symfonyVersion.args }}
+                    composer install
+            -   name: Run composer update if args
+                if: matrix.symfonyVersion.args != ''
+                run: |
+                    composer update ${{ matrix.symfonyVersion.args }}
             -   name: Remove auth.json file
                 run: rm -f $GITHUB_WORKSPACE/auth.json
             -   name: "Check file existence"
