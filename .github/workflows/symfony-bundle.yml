@@ -23,7 +23,7 @@ jobs:
         needs: php-requirements
         strategy:
             matrix:
-                symfonyVersion: ${{ inputs.symfonyVersionMatrix.split(',')
+                symfonyVersion: ${{ inputs.symfonyVersionMatrix.split(',') }}
                 phpVersion: ${{ needs.php-requirements.outputs.phpVersions }}
         runs-on: ubuntu-latest
         steps:
