@@ -31,7 +31,7 @@ jobs:
         steps:
             -   name: Check if php version is supported
                 if: contains(matrix.symfonyVersion.phpVersions, matrix.phpVersion) == false
-                run: echo 1
+                run: exit 1
             -   uses: actions/checkout@v3
             -   name: Add HTTP basic auth credentials
                 run: echo '${{ secrets.COMPOSER_AUTH_JSON }}' > $GITHUB_WORKSPACE/auth.json
@@ -40,7 +40,7 @@ jobs:
                 with:
                     file: composer.json
                     field: extra
-                    value: '{"symfony": { "allow-contrib": "false", "require": "${{ matrix.symfonyVersion.symfony }}" } }'
+                    value: '{"symfony": { "allow-contrib": "false", "require": "${{ matrix.symfonyVersion.version }}" } }'
                     parse_json: true
             -   name: Logging
                 run: |
@@ -50,9 +50,13 @@ jobs:
                 with:
                     php-version: ${{ matrix.phpVersion }}
                     extensions: ${{ join(fromJSON(needs.php-requirements.outputs.phpExtensions), ' ') }}
-            -   name: Run composer commands
+            -   name: Run composer commands lower
+                if: matrix.symfonyVersion.version == '5.4.*'
                 run: |
-                    composer update --lock
+                    composer update --prefer-lowest
+            -   name: Run composer commands
+                if: matrix.symfonyVersion.version == '6.1.*'
+                run: |
                     composer install
             -   name: Remove auth.json file
                 run: rm -f $GITHUB_WORKSPACE/auth.json
@@ -71,5 +75,5 @@ jobs:
                 with:
                     file: output/code-coverage/clover.xml
             -   name: Mark as success if not supported
-                if: failure() && !contains(matrix.symfonyVersion.phpVersions,matrix.phpVersion)
-                run: echo 0;
+                if: failure() && contains(matrix.symfonyVersion.phpVersions, matrix.phpVersion) == false
+                run: exit 0;
