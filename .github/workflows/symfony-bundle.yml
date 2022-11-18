@@ -1,0 +1,63 @@
+name: 'Build & Test Symfony Bundle'
+
+on:
+    workflow_call:
+        inputs:
+            symfonyVersionMatrix:
+                type: array
+                required: true
+                description: An array of symfony versions e.g. ['5.4.*', '6.1.*']
+                default: [ '5.4.*' ]
+
+jobs:
+    php-requirements:
+        runs-on: ubuntu-latest
+        outputs:
+            phpVersions: ${{ steps.php-requirements.outputs.version }}
+            phpExtensions: ${{ steps.php-requirements.outputs.extensions }}
+        steps:
+            -   uses: actions/checkout@v3
+            -   id: php-requirements
+                uses: WyriHaximus/github-action-composer-php-versions-in-range@v1
+    build-and-test:
+        needs: php-requirements
+        strategy:
+            matrix:
+                -   symfonyVersion: ${{ fromJSON(inputs.applicationsMatrix) }}
+                -   phpVersion: ${{ needs.php-requirements.outputs.phpVersions }}
+        runs-on: ubuntu-latest
+        steps:
+            -   uses: actions/checkout@v3
+            -   name: Add HTTP basic auth credentials
+                run: echo '${{ secrets.COMPOSER_AUTH_JSON }}' > $GITHUB_WORKSPACE/auth.json
+            -   name: Update composer.json extra
+                uses: jossef/action-set-json-field@v2
+                with:
+                    file: composer.json
+                    field: extra
+                    value: '{ symfony: { allow-contrib: false, require: "${{ matrix.symfonyVersion }}" } }'
+                    parse_json: true
+            -   name: Logging
+                run: |
+                    cat composer.json
+            -   name: Install dependencies
+                uses: php-actions/composer@v6
+                with:
+                    php_version: ${{ matrix.phpVersion }}
+                    php_extensions: join(needs.php-requirements.outputs.phpExtensions, ',')
+            -   name: Remove auth.json file
+                run: rm -f $GITHUB_WORKSPACE/auth.json
+            -   name: "Check file existence"
+                uses: andstor/file-existence-action@v1
+                id: check_files
+                with:
+                    files: "phpunit.xml.dist"
+                    allow_failure: false
+            -   name: PHPUnit Tests
+                if: steps.check_files.outputs.files_exists == 'true'
+                run: composer test:coverage
+            -   name: Coverage Report as Comment (Clover)
+                if: steps.check_files.outputs.files_exists == 'true' && github.event_name == 'pull_request'
+                uses: lucassabreu/comment-coverage-clover@main
+                with:
+                    file: output/code-coverage/clover.xml
