@@ -6,8 +6,8 @@ on:
             symfonyVersionMatrix:
                 type: string
                 required: true
-                description: An array of symfony versions e.g. ['5.4.*', '6.1.*']
-                default: [ '5.4.*' ]
+                description: An comma separated list of symfony versions e.g. '5.4.*,6.1.*'
+                default: '5.4.*'
 
 jobs:
     php-requirements:
@@ -23,7 +23,7 @@ jobs:
         needs: php-requirements
         strategy:
             matrix:
-                -   symfonyVersion: ${{ fromJSON(inputs.applicationsMatrix) }}
+                -   symfonyVersion: ${{ inputs.symfonyVersionMatrix.split(',')
                 -   phpVersion: ${{ needs.php-requirements.outputs.phpVersions }}
         runs-on: ubuntu-latest
         steps:
