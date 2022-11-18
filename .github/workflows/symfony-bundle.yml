@@ -34,7 +34,7 @@ jobs:
         runs-on: ubuntu-latest
         steps:
             -   name: Check if php version is supported
-                if: !contains(matrix.symfonyVersion.phpVersions,matrix.phpVersion)
+                if: contains(matrix.symfonyVersion.phpVersions, matrix.phpVersion) == false
                 run: echo 1
             -   uses: actions/checkout@v3
             -   name: Add HTTP basic auth credentials
