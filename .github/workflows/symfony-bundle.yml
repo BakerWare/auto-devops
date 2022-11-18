@@ -6,8 +6,8 @@ on:
             symfonyVersionMatrix:
                 type: string
                 required: true
-                description: An comma separated list of symfony versions e.g. '5.4.*,6.1.*'
-                default: '5.4.*'
+                description: 'Example [{"version": "5.4.*", "supports": ["8.0", "8.1"], "args": "--prefer-lowest"},{"version": "6.1.*", "supports": ["8.1"], "args": ""}]'
+                default: '[]'
 
 jobs:
     php-requirements:
@@ -25,12 +25,12 @@ jobs:
         continue-on-error: true
         strategy:
             matrix:
-                symfonyVersion: ${{ fromJSON(inputs.symfonyVersionMatrix).symfony }}
+                symfonyVersion: ${{ fromJSON(inputs.symfonyVersionMatrix) }}
                 phpVersion: ${{ fromJSON(needs.php-requirements.outputs.phpVersions) }}
         runs-on: ubuntu-latest
         steps:
             -   name: Check if php version is supported
-                if: contains(matrix.symfonyVersion.phpVersions, matrix.phpVersion) == false
+                if: contains(matrix.symfonyVersion.supports, matrix.phpVersion) == false
                 run: exit 1
             -   uses: actions/checkout@v3
             -   name: Add HTTP basic auth credentials
@@ -50,14 +50,9 @@ jobs:
                 with:
                     php-version: ${{ matrix.phpVersion }}
                     extensions: ${{ join(fromJSON(needs.php-requirements.outputs.phpExtensions), ' ') }}
-            -   name: Run composer commands lower
-                if: matrix.symfonyVersion.version == '5.4.*'
-                run: |
-                    composer update --prefer-lowest
             -   name: Run composer commands
-                if: matrix.symfonyVersion.version == '6.1.*'
                 run: |
-                    composer install
+                    composer install ${{ matrix.symfonyVersion.args }}
             -   name: Remove auth.json file
                 run: rm -f $GITHUB_WORKSPACE/auth.json
             -   name: "Check file existence"
@@ -75,5 +70,5 @@ jobs:
                 with:
                     file: output/code-coverage/clover.xml
             -   name: Mark as success if not supported
-                if: failure() && contains(matrix.symfonyVersion.phpVersions, matrix.phpVersion) == false
+                if: failure() && contains(matrix.symfonyVersion.supports, matrix.phpVersion) == false
                 run: exit 0;
