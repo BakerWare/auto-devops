@@ -31,6 +31,7 @@ jobs:
                 symfonyVersion: ${{ fromJSON(needs.php-requirements.outputs.symfonyVersions) }}
                 phpVersion: ${{ fromJSON(needs.php-requirements.outputs.phpVersions) }}
         runs-on: ubuntu-latest
+        if: contains(matrix.symfonyVersion.phpVersions,matrix.phpVersion)
         steps:
             -   uses: actions/checkout@v3
             -   name: Add HTTP basic auth credentials
@@ -40,7 +41,7 @@ jobs:
                 with:
                     file: composer.json
                     field: extra
-                    value: '{"symfony": { "allow-contrib": "false", "require": "${{ matrix.symfonyVersion }}" } }'
+                    value: '{"symfony": { "allow-contrib": "false", "require": "${{ matrix.symfonyVersion.symfony }}" } }'
                     parse_json: true
             -   name: Logging
                 run: |
