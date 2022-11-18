@@ -23,7 +23,7 @@ jobs:
             -   name: Change symfony versions to an array
                 id: symfonyVersions
                 run: |
-                    echo ::set-output name=EXTRACTED_VERSIONS::[${{ inputs.symfonyVersionMatrix }}]
+                    echo ::set-output name=extracted_versions::'[${{ inputs.symfonyVersionMatrix }}]'
     build-and-test:
         needs: php-requirements
         strategy:
