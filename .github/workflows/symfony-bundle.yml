@@ -25,7 +25,7 @@ jobs:
         continue-on-error: true
         strategy:
             matrix:
-                symfonyVersion: ${{ fromJSON(inputs.symfonyVersionMatrix).symfony }}
+                symfonyVersion: ${{ fromJSON(inputs.symfonyVersionMatrix) }}
                 phpVersion: ${{ fromJSON(needs.php-requirements.outputs.phpVersions) }}
         runs-on: ubuntu-latest
         steps:
