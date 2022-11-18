@@ -33,7 +33,7 @@ jobs:
                 phpVersion: ${{ fromJSON(needs.php-requirements.outputs.phpVersions) }}
         runs-on: ubuntu-latest
         steps:
-            -   name: Supported?
+            -   name: Check if php version is supported
                 if: !contains(matrix.symfonyVersion.phpVersions,matrix.phpVersion)
                 run: echo 1
             -   uses: actions/checkout@v3
