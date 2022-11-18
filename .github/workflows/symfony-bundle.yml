@@ -40,7 +40,7 @@ jobs:
                 with:
                     file: composer.json
                     field: extra
-                    value: '{ symfony: { allow-contrib: false, require: "${{ matrix.symfonyVersion }}" } }'
+                    value: '{"symfony": { "allow-contrib": "false", "require": "${{ matrix.symfonyVersion }}" } }'
                     parse_json: true
             -   name: Logging
                 run: |
