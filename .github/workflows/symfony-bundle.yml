@@ -26,13 +26,16 @@ jobs:
                     echo ::set-output name=extracted_versions::'[${{ inputs.symfonyVersionMatrix }}]'
     build-and-test:
         needs: php-requirements
+        continue-on-error: true
         strategy:
             matrix:
                 symfonyVersion: ${{ fromJSON(needs.php-requirements.outputs.symfonyVersions) }}
                 phpVersion: ${{ fromJSON(needs.php-requirements.outputs.phpVersions) }}
         runs-on: ubuntu-latest
-        if: contains(matrix.symfonyVersion.phpVersions,matrix.phpVersion)
         steps:
+            -   name: Supported?
+                if: !contains(matrix.symfonyVersion.phpVersions,matrix.phpVersion)
+                run: echo 1
             -   uses: actions/checkout@v3
             -   name: Add HTTP basic auth credentials
                 run: echo '${{ secrets.COMPOSER_AUTH_JSON }}' > $GITHUB_WORKSPACE/auth.json
@@ -67,3 +70,6 @@ jobs:
                 uses: lucassabreu/comment-coverage-clover@main
                 with:
                     file: output/code-coverage/clover.xml
+            -   name: Mark as success if not supported
+                if: failure() && !contains(matrix.symfonyVersion.phpVersions,matrix.phpVersion)
+                run: echo 0;
