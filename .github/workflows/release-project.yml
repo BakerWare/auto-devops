@@ -23,7 +23,7 @@ jobs:
                     type: now
                     from_branch: develop
                     target_branch: main
-                    github_token: ${{ github.token }}
+                    github_token: ${{ secrets.GITHUB_TOKEN }}
                     message: Merge develop into main
 
     release:
