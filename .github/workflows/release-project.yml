@@ -17,13 +17,16 @@ jobs:
         runs-on: ubuntu-latest
         steps:
             -   uses: actions/checkout@v2
+                with:
+                    persist-credentials: false
+                    token: ${{ secrets.ACTION_ACCESS_TOKEN }}
             -   name: Merge develop -> main
                 uses: devmasx/merge-branch@master
                 with:
                     type: now
                     from_branch: develop
                     target_branch: main
-                    github_token: ${{ secrets.GITHUB_TOKEN }}
+                    github_token: ${{ secrets.ACTION_ACCESS_TOKEN }}
                     message: Merge develop into main
 
     release:
@@ -39,7 +42,7 @@ jobs:
                 env:
                     JIRA_USER: ${{ secrets.JIRA_USER }}
                     JIRA_PASS: ${{ secrets.JIRA_PASS }}
-                    GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+                    GITHUB_TOKEN: ${{ secrets.ACTION_ACCESS_TOKEN }}
                     PROJECT: ${{ inputs.project }}
 
 
