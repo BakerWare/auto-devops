@@ -80,7 +80,7 @@ jobs:
                     php -v
             -   name: PHPUnit Tests
                 if: steps.check_files.outputs.files_exists == 'true'
-                run: php bin/phpunit
+                run: php bin/phpunit --coverage-clover="output/code-coverage/clover.xml"
                 env:
                     MYSQL_DATABASE: phpunit
                     MYSQL_USER: runner
@@ -92,3 +92,8 @@ jobs:
                     DATABASE_USER: root
                     DATABASE_PASSWORD: password
                     XDEBUG_MODE: coverage
+            -   name: Coverage Report as Comment (Clover)
+                if: steps.check_files.outputs.files_exists == 'true' && github.event_name == 'pull_request'
+                uses: lucassabreu/comment-coverage-clover@main
+                with:
+                    file: output/code-coverage/clover.xml
