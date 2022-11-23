@@ -7,6 +7,10 @@ on:
                 type: string
                 required: false
                 default: 2.2
+            codeCoverage:
+                type: boolean
+                required: false
+                default: true
 
 jobs:
     build:
@@ -79,7 +83,21 @@ jobs:
                     which php
                     php -v
             -   name: PHPUnit Tests
-                if: steps.check_files.outputs.files_exists == 'true'
+                if: steps.check_files.outputs.files_exists == 'true' && !inputs.codeCoverage
+                run: php bin/phpunit
+                env:
+                    MYSQL_DATABASE: phpunit
+                    MYSQL_USER: runner
+                    MYSQL_ROOT_PASSWORD: password
+                    MYSQL_PASSWORD: password
+                    DATABASE_HOST: 127.0.0.1
+                    DATABASE_PORT: 3306
+                    DATABASE_NAME: phpunit
+                    DATABASE_USER: root
+                    DATABASE_PASSWORD: password
+                    XDEBUG_MODE: coverage
+            -   name: PHPUnit Tests
+                if: steps.check_files.outputs.files_exists == 'true' && inputs.codeCoverage
                 run: php bin/phpunit --coverage-clover="output/code-coverage/clover.xml"
                 env:
                     MYSQL_DATABASE: phpunit
@@ -93,7 +111,7 @@ jobs:
                     DATABASE_PASSWORD: password
                     XDEBUG_MODE: coverage
             -   name: Coverage Report as Comment (Clover)
-                if: steps.check_files.outputs.files_exists == 'true' && github.event_name == 'pull_request'
+                if: inputs.codeCoverage && steps.check_files.outputs.files_exists == 'true' && github.event_name == 'pull_request'
                 uses: lucassabreu/comment-coverage-clover@main
                 with:
                     file: output/code-coverage/clover.xml
