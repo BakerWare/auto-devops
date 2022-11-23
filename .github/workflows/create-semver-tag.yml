@@ -2,6 +2,11 @@ name: Tag next release
 
 on:
     workflow_call:
+        inputs:
+            lerna:
+                type: boolean
+                required: false
+                default: false
 
 env:
     GITHUB_TOKEN: ${{ secrets.ACTION_ACCESS_TOKEN }}
@@ -61,7 +66,7 @@ jobs:
     npm_version:
         runs-on: ubuntu-latest
         needs: semver
-        if: startsWith(github.event.repository.name, 'ts-')
+        if: startsWith(github.event.repository.name, 'ts-') && !inputs.lerna
         steps:
             -   uses: 'actions/checkout@v2'
                 with:
@@ -81,3 +86,27 @@ jobs:
                     git config user.name "${GITHUB_ACTOR}"
                     git config user.email "${GITHUB_ACTOR}@bakerware.nl"
                     npm version ${{ needs.semver.outputs.tag }}
+    lerna_version:
+        runs-on: ubuntu-latest
+        needs: semver
+        if: inputs.lerna
+        steps:
+            -   uses: 'actions/checkout@v2'
+                with:
+                    token: ${{ secrets.ACTION_ACCESS_TOKEN }}
+                    ref: ${{ github.event.repository.default_branch }}
+            -   uses: actions/setup-node@v3
+                with:
+                    node-version: 16
+                    registry-url: https://npm.pkg.github.com
+            -   name: npm install and build
+                run: |
+                    npm config set @bakerware:registry  https://npm.pkg.github.com
+                    npm config set //npm.pkg.github.com/:_authToken "${{ secrets.ACTION_ACCESS_TOKEN }}"
+                    npm i -g lerna
+                    npm ci
+            -   name: Run npm version --allow-same-version
+                run: |
+                    git config user.name "${GITHUB_ACTOR}"
+                    git config user.email "${GITHUB_ACTOR}@bakerware.nl"
+                    lerna version ${{ needs.semver.outputs.tag }}

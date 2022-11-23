@@ -15,7 +15,6 @@ jobs:
         outputs:
             phpVersions: ${{ steps.php-requirements.outputs.version }}
             phpExtensions: ${{ steps.php-requirements.outputs.extensions }}
-            symfonyVersions: ${{ steps.symfonyVersions.outputs.extracted_versions }}
         steps:
             -   uses: actions/checkout@v3
             -   id: php-requirements
