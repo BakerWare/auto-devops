@@ -105,8 +105,8 @@ jobs:
                     npm config set //npm.pkg.github.com/:_authToken "${{ secrets.ACTION_ACCESS_TOKEN }}"
                     npm i -g lerna
                     npm ci
-            -   name: Run npm version --allow-same-version
+            -   name: Run lerna version
                 run: |
                     git config user.name "${GITHUB_ACTOR}"
                     git config user.email "${GITHUB_ACTOR}@bakerware.nl"
-                    lerna version ${{ needs.semver.outputs.tag }}
+                    lerna version ${{ needs.semver.outputs.tag }} --yes
