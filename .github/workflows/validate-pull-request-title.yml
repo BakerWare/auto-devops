@@ -9,4 +9,4 @@ jobs:
         steps:
             -   uses: Slashgear/action-check-pr-title@v3.0.0
                 with:
-                    regex: '[A-Z]+-[0-9]+\s[\w| ]+'
+                    regexp: '[A-Z]+-[0-9]+\s[\w| ]+'
