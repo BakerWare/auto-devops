@@ -1,0 +1,12 @@
+name: Validate Commit Messages
+
+on:
+    workflow_call:
+
+jobs:
+    validate_commits:
+        runs-on: ubuntu-latest
+        steps:
+            -   uses: Slashgear/action-check-pr-title@2.0.0
+                with:
+                    regex: '[A-Z]+-[0-9]+\s[\w| ]+'
