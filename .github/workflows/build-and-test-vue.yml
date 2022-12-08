@@ -22,3 +22,4 @@ jobs:
                 with:
                     reporter: github-pr-review
                     github_token: ${{ secrets.ACTION_ACCESS_TOKEN }}
+                    eslint_flags: '{**/*,*}.{js,ts,jsx,tsx,html,vue}'
