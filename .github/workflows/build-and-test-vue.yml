@@ -18,3 +18,7 @@ jobs:
                     npm config set //npm.pkg.github.com/:_authToken "${{ secrets.ACTION_ACCESS_TOKEN }}"
                     npm ci
                     npm run build
+            -   uses: reviewdog/action-eslint@v1
+                with:
+                    reporter: github-pr-review
+                    github_token: ${{ secrets.ACTION_ACCESS_TOKEN }}
