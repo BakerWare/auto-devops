@@ -35,6 +35,15 @@ jobs:
                     version: ${{ inputs.composerVersion }}
             -   name: Remove auth.json file
                 run: rm -f $GITHUB_WORKSPACE/auth.json
+            -   name: Run php check code with reviewdog
+                uses: GeneaLabs/action-reviewdog-phpstan@1.1.2
+                with:
+                    github_token: '${{ secrets.ACTION_ACCESS_TOKEN }}'
+                    level: 'error'
+                    fail_on_error: 'false'
+                    phpstan_level: 4
+                    reporter: 'github-pr-review'
+                    target_directory: 'src'
             -   name: Compress workspace
                 run: tar -zcf /tmp/vivid-env.tar.gz .
             -   name: Upload workspace
