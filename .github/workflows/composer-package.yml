@@ -6,6 +6,10 @@ on:
                 default: false
                 required: false
                 description: "Determine wether or not we want to publish the NPM package."
+            phpVersion:
+                type: string
+                required: false
+                description: "Php version to be installed"
 
 permissions:
     contents: read
@@ -25,7 +29,7 @@ jobs:
             -   name: Install dependencies
                 uses: php-actions/composer@v6
                 with:
-                    php_version: ${{ secrets.PHP_VERSION || steps.supported-versions-matrix.outputs.lowest }}
+                    php_version: ${{ inputs.phpVersion || steps.supported-versions-matrix.outputs.lowest }}
                     php_extensions: calendar gd zip
             -   name: Remove auth.json file
                 run: rm -f $GITHUB_WORKSPACE/auth.json
