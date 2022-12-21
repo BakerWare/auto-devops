@@ -39,6 +39,21 @@ jobs:
                     version: ${{ inputs.composerVersion }}
             -   name: Remove auth.json file
                 run: rm -f $GITHUB_WORKSPACE/auth.json
+            -   name: 'Check for existing yarn.lock'
+                uses: andstor/file-existence-action@v1
+                id: check_files
+                with:
+                    files: 'yarn.lock'
+                    allow_failure: false
+            -   uses: mskelton/setup-yarn@v1
+                if: steps.check_files.outputs.files_exists == 'true'
+                with:
+                    node-version: '16.x'
+            -   name: 'Yarn install & build'
+                if: steps.check_files.outputs.files_exists == 'true'
+                run: |
+                    yarn install
+                    yarn build
             -   name: Compress workspace
                 run: tar -zcf /tmp/vivid-env.tar.gz .
             -   name: Upload workspace
