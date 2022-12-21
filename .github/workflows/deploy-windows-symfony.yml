@@ -45,15 +45,21 @@ jobs:
                 with:
                     files: 'yarn.lock'
                     allow_failure: false
-            -   uses: mskelton/setup-yarn@v1
+            -   name: Set Node.js 16.x
                 if: steps.check_files.outputs.files_exists == 'true'
+                uses: actions/setup-node@v3
                 with:
-                    node-version: '16.x'
-            -   name: 'Yarn install & build'
+                  node-version: 16.x
+            -   name: Run yarn install
                 if: steps.check_files.outputs.files_exists == 'true'
-                run: |
-                    yarn install
-                    yarn build
+                uses: borales/actions-yarn@v4
+                with:
+                    cmd: install
+            -   name: Run yarn build
+                if: steps.check_files.outputs.files_exists == 'true'
+                uses: borales/actions-yarn@v4
+                with:
+                    cmd: build
             -   name: Compress workspace
                 run: tar -zcf /tmp/vivid-env.tar.gz .
             -   name: Upload workspace
