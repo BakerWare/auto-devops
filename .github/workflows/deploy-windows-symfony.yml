@@ -88,7 +88,7 @@ jobs:
                     echo '${{secrets.ANSIBLE_VAULT_PASSWORD}}' > /home/runner/password-file.txt
                     mkdir .ansible
                     echo '${{ secrets.WINDOWS_DEPLOY_KEY }}' > .ansible/private.pem
-                    ansible encrypt .ansible/private.pem --vault-password-file /home/runner/password-file.txt
+                    ansible-vault encrypt .ansible/private.pem --vault-password-file /home/runner/password-file.txt
             -   name: Deploy
                 uses: rfreij/ansible-playbook-docker-action@master
                 with:
