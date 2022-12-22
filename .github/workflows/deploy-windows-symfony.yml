@@ -80,7 +80,9 @@ jobs:
                 run: |
                     tar -xf /tmp/vivid-env.tar.gz -C ./
             -   name: Create private key .pem
-                run: echo '${{ secrets.WINDOWS_DEPLOY_KEY }}' > /home/runner/.ssh/private.pem
+                run: |
+                    mkdir /home/runner/.ssh
+                    echo '${{ secrets.WINDOWS_DEPLOY_KEY }}' > /home/runner/.ssh/private.pem
             -   name: Deploy
                 uses: rfreij/ansible-playbook-docker-action@master
                 with:
