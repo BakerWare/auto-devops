@@ -81,15 +81,15 @@ jobs:
                     tar -xf /tmp/vivid-env.tar.gz -C ./
             -   name: Create private key .pem
                 run: |
-                    mkdir /home/runner/.ssh
-                    echo '${{ secrets.WINDOWS_DEPLOY_KEY }}' > /home/runner/.ssh/private.pem
+                    mkdir .ansible
+                    echo '${{ secrets.WINDOWS_DEPLOY_KEY }}' > .ansible/private.pem
             -   name: Deploy
                 uses: rfreij/ansible-playbook-docker-action@master
                 with:
                     playbookName: "ansible/playbook/symfony/playbook.yml"
                     inventoryFile: "ansible/inventories/${{ github.event.inputs.environment }}/hosts.yml"
                     keyFileVaultPass: ${{secrets.ANSIBLE_VAULT_PASSWORD}}
-                    keyFile: "/home/runner/.ssh/private.pem"
+                    keyFile: ".ansible/private.pem"
                     extraVars: "-e ansible_user=${{secrets.ANSIBLE_USER}} -e ansible_password=${{secrets.ANSIBLE_PASSWORD}}"
                     verbosity: "vv"
             -   name: Slack Notification
