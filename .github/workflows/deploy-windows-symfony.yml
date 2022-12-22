@@ -71,6 +71,8 @@ jobs:
         needs: build
         runs-on: ubuntu-latest
         steps:
+            -   run: |
+                    apt install ansible
             -   name: Download artifacts
                 uses: actions/download-artifact@v3
                 with:
@@ -81,8 +83,10 @@ jobs:
                     tar -xf /tmp/vivid-env.tar.gz -C ./
             -   name: Create private key .pem
                 run: |
+                    echo '${{secrets.ANSIBLE_VAULT_PASSWORD}}' > /home/runner/password-file.txt
                     mkdir .ansible
                     echo '${{ secrets.WINDOWS_DEPLOY_KEY }}' > .ansible/private.pem
+                    ansible encrypt .ansible/private.pem --vault-password-file /home/runner/password-file.txt
             -   name: Deploy
                 uses: rfreij/ansible-playbook-docker-action@master
                 with:
